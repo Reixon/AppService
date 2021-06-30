@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:id="@+id/layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/layout_button"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <TextView
+                    android:id="@+id/title_name_business"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_your_address"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/title_step_register"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
+                    android:background="@android:color/background_light">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:startIconDrawable="@drawable/ic_search_24"
+                        android:hint="@string/hint_write_your_address">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/txt_search_service"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:background="@android:color/background_light"
+                            android:lines="1"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:imeOptions="actionSearch"
+                            android:layout_marginRight="50dp"
+                            android:textColor="@android:color/black"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </FrameLayout>
+
+                <ListView
+                    android:id="@+id/listAdresses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+    </FrameLayout>
+</layout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/business_home"
+    app:startDestination="@id/bookings">
+
+    <fragment
+        android:id="@+id/bookings"
+        android:name="com.myproject.appservice.controllers.ViewMainBusiness.CalendarBusiness"
+        android:label="fragment_calendar_business"
+        tools:layout="@layout/fragment_calendar_business" >
+        <action
+            android:id="@+id/action_calendar_business_to_customerView2"
+            app:destination="@id/customer" />
+    </fragment>
+    <fragment
+        android:id="@+id/customer"
+        android:name="com.myproject.appservice.controllers.ViewMainBusiness.CustomerView"
+        android:label="fragment_customer_view"
+        tools:layout="@layout/fragment_customers_view" >
+        <action
+            android:id="@+id/action_customer_to_settingFragmentBusiness"
+            app:destination="@id/settingFragmentBusiness" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragmentBusiness"
+        android:name="com.myproject.appservice.controllers.ViewMainBusiness.SettingFragmentBusiness"
+        android:label="SettingFragmentBusiness" />
+</navigation>

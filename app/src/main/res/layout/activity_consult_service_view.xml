@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:id="@+id/generalLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:id="@+id/layout_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/back_arrow"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                android:background="@color/backgroundColor"/>
+            <TextView
+                android:id="@+id/title"
+                android:layout_toEndOf="@+id/back_arrow"
+                android:layout_alignTop="@+id/back_arrow"
+                android:layout_alignBottom="@+id/back_arrow"
+                android:layout_width="match_parent"
+                android:text="@string/title_do_booking"
+                android:gravity="center_vertical"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <CalendarView
+            android:id="@+id/view_pager_grid"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+
+            android:layout_below="@id/layout_title"/>
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:scrollbars="none"
+            android:layout_below="@id/view_pager_grid" >
+
+            <LinearLayout
+                android:id="@+id/layout_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <RelativeLayout
+            android:id="@+id/layout_button_add_service"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/btBooking"
+            android:layout_below="@id/horizontalScroll"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="22dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_services"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/btAddService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@id/list_services"
+                android:background="@color/backgroundColor"
+                android:src="@drawable/ic_add_24" />
+
+            <TextView
+                android:id="@+id/addServiceTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/btAddService"
+                android:layout_alignBottom="@+id/btAddService"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/btAddService"
+                android:gravity="center_vertical"
+                android:text="@string/hit_bt_add_service"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <Button
+           android:id="@+id/btBooking"
+           android:layout_margin="20dp"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/hit_bt_booking"
+           android:layout_alignParentBottom="true"/>
+
+        <ProgressBar
+            android:id="@+id/circularProgress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:elevation="8dp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+</layout>

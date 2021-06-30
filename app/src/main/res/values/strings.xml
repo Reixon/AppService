@@ -1,0 +1,139 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <string name="app_name">AppService</string>
+
+    <!-- Buttons -->
+    <string name="btOk">Aceptar</string>
+    <string name="btRegister">Registrarse</string>
+    <string name="btLogin">Login</string>
+    <string name="bt_continue">Continuar</string>
+    <string name="bt_save">Guardar</string>
+    <string name="bt_cancel">Cancelar</string>
+    <string name="bt_change">Cambiar</string>
+
+    <!-- Error Messages -->
+    <string name="msg_name_isRequired">El campo nombre del propietario es requerido.</string>
+    <string name="msg_email_isRequired">El campo email es requerido.</string>
+    <string name="msg_password_isRequired">El campo contraseña es requerido.</string>
+    <string name="msg_business_name_isRequired">El campo nombre del negocio es requerido.</string>
+    <string name="msg_business_phone_isRequired">El teléfono es requerido</string>
+    <string name="msg_business_phone_format">El formato del teléfono no es correcto</string>
+    <string name="msg_error_invalid_password">Contraseña demasiado corta</string>
+    <string name="msg_error_invalid_email">El formato del email no es valido</string>
+    <string name="msg_error_communication_data_no_update">Ocurrió un error al subir los datos</string>
+    <string name="msg_error_communication_user_update">Ocurrió un error al registrar el usuario</string>
+
+    <!-- LOGIN -->
+    <string name="title_login">Inicia sesión con tu email</string>
+    <string name="hint_email">Tu email</string>
+    <string name="hint_password">Tu contraseña</string>
+    <string name="message_register_business_or_customer">¿Eres un negocio o cliente?</string>
+    <string name="message_customer">Cliente</string>
+    <string name="message_business">Negocio</string>
+
+    <!-- REGISTER -->
+    <string name="title_register">Registrar</string>
+    <string name="hint_nombrePropietario">Nombre </string>
+
+    <!-- REGISTRAR BUSINESS -->
+    <string name="title_name_business">Negocio</string>
+    <string name="hint_name_business">¿Cual es el nombre del negocio?</string>
+    <string name="hint_mobile_business">¿Cual es el número de telefono de tu negocio?</string>
+
+    <!-- WHERE DO YOU WORK -->
+    <string name="title_where_business">¿Donde trabajas?</string>
+    <string name="hit_only_establishment">Solo en mi establecimiento</string>
+    <string name="hit_establishment_delivery">En mi establecimiento y a domicilio</string>
+    <string name="hit_only_delivery">Solo a domicilio</string>
+
+    <!--LOCAL -->
+    <string name="title_your_address">Tu Dirección</string>
+    <string name="hint_write_your_address">Introduce tu dirección</string>
+    <string name="hit_street">Calle</string>
+    <string name="hit_number">Numero del apartamento (opcional)</string>
+    <string name="hit_city">Ciudad</string>
+    <string name="hit_postal_code">Código postal</string>
+    <string name="title_your_ubication">Tu ubicación</string>
+    <string name="text_position_localized">Dirección localizada</string>
+    <string name="text_resume_places">%1$s, %2$s, %3$s, %4$s</string>
+
+    <!--SCHEDULE OF BUSINESS -->
+    <string name="title_business_schedule">Su horario del negocio</string>
+    <string name="title_edit_schedule">Horario</string>
+    <string name="closed">Cerrado</string>
+    <string name="morningSchedule">09:00 - 14:00</string>
+    <string name="afternoonSchedule">15:00 - 20:00</string>
+    <string name="eveningSchedule">20:00 - 22:00</string>
+    <string name="nightSchedule">23:00 - 00:00</string>
+    <string name="text_schedule_format">%1$s - %2$s</string>
+
+    <!--CATEGORY OF BUSINESS -->
+    <string name="title_business_category">¿Que tipo de negocio es?</string>
+
+    <!-- Servicios -->
+    <string name="title_business_services">¿Que servicios pueden reservar tus clientes?</string>
+    <string name="hint_add_service">Añadir Servicio</string>
+    <string name="information_list_empty">Añade al menos un servicio que tus clientes puedan reservar :)</string>
+    <string name="hint_name_service">Nombre del servicio</string>
+    <string name="hint_duration">Duración</string>
+    <string name="hint_price">Precio</string>
+
+    <!--finally register business -->
+
+    <!-- PANTALLA CLIENTE -->
+    <string name="hint_search_business">Ej: Barberias </string>
+    <string name="descripcion_searchButton">Botón buscar</string>
+
+    <!-- Pantalla vista negocio-->
+    <string name="title_services">Servicios disponibles</string>
+    <string name="hint_search_service">Buscar servicio</string>
+    <string name="hint_bt_booking">RESERVAR</string>
+
+    <!-- Pantalla realizar reserva-->
+    <string name="title_do_booking">Reservar una cita</string>
+    <string name="hit_bt_booking">REALIZAR RESERVAR</string>
+    <string name="hit_bt_add_service">Añadir otro servicio</string>
+    <string name="info_schedule_no_available">No hay disponibilidad para el día seleccionado</string>
+
+    <!-- Menú customer -->
+    <string name="item_home">Inicio</string>
+    <string name="item_booking_customer">Citas</string>
+    <string name="item_profile">Perfil</string>
+
+    <!-- Pantalla lista de reservas-->
+    <string name="text_confirmed">Confirmado</string>
+    <string name="text_capital_confirmed">CONFIRMADO</string>
+    <string name="text">Text</string>
+
+
+    <!--Menú Business -->
+    <string name="item_customer">Clientes</string>
+    <string name="item_booking">Citas</string>
+    <string name="item_setting">Perfil</string>
+
+    <!-- DIALOGO DE PERMISO PARA USAR UBICACIÓN -->
+    <string name="title_use_location">Permisos para utilizar la localización</string>
+    <string name="explication_permissions">La aplicación necesita los permiso para
+        localizar los servicios más cercanos a usted</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Calendar</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="title_activity_main">MainActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+</resources>

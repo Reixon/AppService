@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/layout_schedule"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@color/white"
+    tools:context=".controllers.ViewMainCustomer.ServiceSearchActivity.ServiceSearchActivity">
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"  />
+
+    <TextView
+        android:id="@+id/txtClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="12dp"
+        android:layout_toEndOf="@id/checkbox"
+        android:text="@string/closed"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_scheduleDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/checkbox"
+        android:layout_marginTop="12dp"
+        android:layout_alignParentEnd="true"/>
+
+</RelativeLayout>

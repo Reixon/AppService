@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/layout_info_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="top"
+                android:layout_margin="5dp">
+
+                <TextView
+                    android:id="@+id/title_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_your_address"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/title_step_register"
+                    android:layout_marginBottom="20dp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldStreet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hit_street">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtStreet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:ems="20"
+                        android:textSize="@dimen/editText"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtFieldNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hit_number">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:ems="20"
+                        android:textSize="@dimen/editText"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hit_city">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:ems="20"
+                        android:textSize="@dimen/editText"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldPostalCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hit_postal_code">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtPostalCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:ems="20"
+                        android:textSize="@dimen/editText"
+                        android:inputType="text"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/bt_continue_register_step_four_detail"
+                android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/bt_continue" />
+    </FrameLayout>
+</layout>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="bussiness_category">
+        <item>Salón de belleza</item>
+        <item>Boleras</item>
+        <item>Dentista</item>
+        <item>Gimnasio</item>
+        <item>Peluquería</item>
+        <item>Hospital</item>
+        <item>Cine</item>
+        <item>Empresa de mudanza</item>
+        <item>Farmacia</item>
+        <item>Fisioterapeuta</item>
+        <item>Fontanero</item>
+        <item>Oficina de correos</item>
+        <item>Inmobiliaria</item>
+        <item>Restaurante</item>
+        <item>Techador</item>
+        <item>Veterinario</item>
+    </string-array>
+    <string-array name="array_days_week">
+        <item name="monday">Lunes</item>
+        <item name="tuesday">Martes</item>
+        <item name="wednesday">Miercoles</item>
+        <item name="thursday">Jueves</item>
+        <item name="friday">Viernes</item>
+        <item name="saturday">Sabado</item>
+        <item name="sunday">Domingo</item>
+    </string-array>
+    <string-array name="duration_hours">
+        <item name="zero">0h</item>
+        <item name="one">1h</item>
+        <item name="two">2h</item>
+        <item name="three">3h</item>
+        <item name="four">4h</item>
+        <item name="five">5h</item>
+        <item name="six">6h</item>
+        <item name="seven">7h</item>
+        <item name="eight">8h</item>
+        <item name="nine">9h</item>
+        <item name="nine">10h</item>
+        <item name="ten">11h</item>
+    </string-array>
+    <string-array name="duration_minute">
+        <item name="zero">00m</item>
+        <item name="five">05m</item>
+        <item name="ten">10m</item>
+        <item name="fifteen">15m</item>
+        <item name="twenty">20m</item>
+        <item name="twenty_five">25m</item>
+        <item name="thirty">30m</item>
+        <item name="thirty_five">35m</item>
+        <item name="forty">40m</item>
+        <item name="forty_five">45m</item>
+        <item name="fifty">50m</item>
+        <item name="fifty_five">55m</item>
+    </string-array>
+
+</resources>

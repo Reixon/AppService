@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldNameService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:hint="@string/hint_name_service">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtNameServiceView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:ems="20"
+                    android:textSize="@dimen/editText"
+                    android:background="@android:color/background_light"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="5dp"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/txtDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="4"
+                android:textSize="@dimen/editText"
+                android:hint="@string/hint_duration"
+                android:background="@android:color/background_light"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="10dp"
+                android:maxLines="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/hint_price">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@android:color/background_light"
+                        android:ems="10"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/editText"
+                        android:imeOptions="actionDone"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            <!--    <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldTypePrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/hint_type_price">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtTypePrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="20"
+                        android:textSize="@dimen/editText"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+                -->
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true">
+            <Button
+                android:id="@+id/bt_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bt_save"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/bt_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bt_cancel"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

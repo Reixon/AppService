@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/layout_info_user"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_above="@id/bt_continue_register_step_six"
+                android:layout_margin="5dp">
+
+                <TextView
+                    android:id="@+id/title_business_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_business_category"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/title_step_register"
+                    android:textStyle="bold" />
+
+                <ListView
+                    android:id="@+id/list_categories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/bt_continue_register_step_six"
+                android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="@string/bt_continue" />
+        </RelativeLayout>
+
+    </FrameLayout>
+</layout>

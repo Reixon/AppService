@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/customer_home"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/home"
+        android:name="com.myproject.appservice.controllers.ViewMainCustomer.HomeCustomerView"
+        android:label="HomeCustomerView" />
+
+    <fragment
+        android:id="@+id/bookings"
+        android:name="com.myproject.appservice.controllers.ViewMainCustomer.ListViewBookingCustomer"
+        android:label="ListViewBookingCustomer" />
+
+
+</navigation>

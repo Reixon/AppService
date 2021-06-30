@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:windowSoftInputMode="adjustResize|stateHidden"
+    tools:context=".controllers.RegisterBusinessActivity.RegisterBusinessActivity">
+
+    <com.shuhart.stepview.StepView
+        android:id="@+id/step_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        app:sv_textPadding="12dp"
+        app:sv_animationType="Line"
+        app:sv_selectedCircleColor="@color/colorPrimary"
+        app:sv_selectedCircleRadius="0dp"
+        app:sv_doneCircleRadius="0dp"
+        app:sv_textSize="0dp"
+        app:sv_stepNumberTextSize="0dp"
+        app:sv_doneStepLineColor="@color/black"
+
+        />
+
+    <com.myproject.appservice.controllers.RegisterBusinessActivity.StepsRegisterBusiness.adapters.NonSwiperViewPager
+        android:id="@+id/view_pager"
+        android:layout_below="@+id/step_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/circularProgress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        android:elevation="8dp"
+        android:visibility="gone" />
+</RelativeLayout>

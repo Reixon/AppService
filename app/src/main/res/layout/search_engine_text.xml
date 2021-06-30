@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp"
+            android:background="?attr/backgroundColor">
+                <ImageButton
+                    android:id="@+id/btSearchService"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/white"
+                    android:layout_gravity="start|center_vertical"
+                    android:contentDescription="@string/descripcion_searchButton"
+                    android:src="?android:attr/actionModeWebSearchDrawable" />
+
+                <EditText
+                    android:id="@+id/txt_search_service"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@android:color/background_light"
+                    android:hint="@string/hint_search_business"
+                    android:lines="1"
+                    android:inputType="textCapSentences"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:layout_marginLeft="50dp"
+                    android:textColor="@android:color/black" />
+
+
+        </FrameLayout>
+</layout>

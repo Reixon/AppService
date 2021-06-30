@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:id="@+id/layout_info_user"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <TextView
+                    android:id="@+id/title_name_business"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_name_business"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/title_step_register"
+                    android:layout_marginBottom="20dp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldNameBusiness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_business_center_24"
+                    android:hint="@string/hint_name_business">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtNameBusiness"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:ems="20"
+                        android:textSize="@dimen/editText"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textFieldPhoneBusiness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_local_phone_24"
+                    android:hint="@string/hint_mobile_business">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtMobileBusiness"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/background_light"
+                        android:textColor="@android:color/black"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginTop="20dp"
+                        android:ems="20"
+                        android:imeOptions="actionDone"
+                        android:textSize="@dimen/editText"
+                        android:inputType="phone"
+                        android:maxLines="1"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+            <Button
+                android:id="@+id/bt_continue_register_step_two"
+                android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="@string/bt_continue" />
+        </RelativeLayout>
+    </FrameLayout>
+</layout>
