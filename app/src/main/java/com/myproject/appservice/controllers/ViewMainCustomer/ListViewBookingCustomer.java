@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -59,13 +57,9 @@ public class ListViewBookingCustomer extends Fragment{
         super.onStart();
         showProgress(true);
 
-        CollectionReference docRef = (CollectionReference) FirebaseFirestore.getInstance()
-                .collection("Users")
-                .document(Common.idUser)
-                .collection("Booking")
-                .orderBy("timestamp", Query.Direction.ASCENDING);
-
-        docRef.get()
+        FirebaseFirestore.getInstance().collection("Users")
+        .document(Common.idUser).collection("Booking")
+        .orderBy("timestamp", Query.Direction.ASCENDING).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {

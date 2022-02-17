@@ -23,8 +23,5 @@
             android:id="@+id/action_customer_to_settingFragmentBusiness"
             app:destination="@id/settingFragmentBusiness" />
     </fragment>
-    <fragment
-        android:id="@+id/settingFragmentBusiness"
-        android:name="com.myproject.appservice.controllers.ViewMainBusiness.SettingFragmentBusiness"
-        android:label="SettingFragmentBusiness" />
+
 </navigation>
