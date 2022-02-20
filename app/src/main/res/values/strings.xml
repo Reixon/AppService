@@ -104,6 +104,8 @@
     <string name="text_capital_confirmed">CONFIRMADO</string>
     <string name="text">Text</string>
 
+    <!-- Pantalla perfil -->
+    <string name="title_profil">Perfil</string>
 
     <!--Menú Business -->
     <string name="item_customer">Clientes</string>

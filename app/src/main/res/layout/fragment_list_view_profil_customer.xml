@@ -21,7 +21,7 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:textSize="25sp"
-            android:text="@string/item_booking_customer" />
+            android:text="@string/title_profil" />
 
         <LinearLayout
             android:id="@+id/layout"

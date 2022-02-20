@@ -2,6 +2,7 @@ package com.myproject.appservice.controllers.ViewMainCustomer;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -21,13 +22,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.myproject.appservice.Common;
 import com.myproject.appservice.R;
 import com.myproject.appservice.controllers.ViewMainCustomer.ConsultBookingDetail.ConsultBookingDetail;
@@ -60,29 +57,23 @@ public class ListViewBookingCustomer extends Fragment{
         FirebaseFirestore.getInstance().collection("Users")
         .document(Common.idUser).collection("Booking")
         .orderBy("timestamp", Query.Direction.ASCENDING).get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            if(!task.getResult().isEmpty()){
-                                bookings = new ArrayList<>();
-                                for (QueryDocumentSnapshot queryDocumentSnapshot: task.getResult()){
-                                    Booking booking = queryDocumentSnapshot.toObject(Booking.class);
-                                    bookings.add(booking);
-                                }
-                                adapter = new AdapterListViewBooking(getContext(), bookings);
-                                listBooking.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                                showProgress(false);
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        if(!task.getResult().isEmpty()){
+                            bookings = new ArrayList<>();
+                            for (QueryDocumentSnapshot queryDocumentSnapshot: task.getResult()){
+                                Booking booking = queryDocumentSnapshot.toObject(Booking.class);
+                                bookings.add(booking);
                             }
+                            adapter = new AdapterListViewBooking(getContext(), bookings);
+                            listBooking.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            showProgress(false);
                         }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+                }).addOnFailureListener(e -> {
 
-            }
-        });
+                });
     }
 
     @Override
@@ -92,14 +83,14 @@ public class ListViewBookingCustomer extends Fragment{
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         binding = FragmentListViewBookingCustomerBinding.inflate(inflater, container, false);
         mProgressView = binding.progressCircular;
         listBooking = binding.listServices;
         listBooking.setHasFixedSize(true);
-        listBooking.setLayoutManager(new LinearLayoutManager(this.getContext().getApplicationContext()));
+        listBooking.setLayoutManager(new LinearLayoutManager(this.requireContext().getApplicationContext()));
 
         return binding.getRoot();
     }
@@ -146,14 +137,14 @@ public class ListViewBookingCustomer extends Fragment{
 
         @Override
         public void onBindViewHolder(@NonNull AdapterListViewBooking.ViewHolder holder, int position) {
-            String services = "";
+            StringBuilder services = new StringBuilder();
             for (int i = 0; i< bookings.get(position).getServices().size(); i++){
                 if(i>0){
-                    services+=",";
+                    services.append(",");
                 }
-                services += bookings.get(position).getServices().get(i).getName();
+                services.append(bookings.get(position).getServices().get(i).getName());
             }
-            holder.txtService.setText(services);
+            holder.txtService.setText(services.toString());
             holder.txtNameBusiness.setText(bookings.get(position).getBusiness());
             holder.txtAddress.setText(bookings.get(position).getAddress());
             StringBuilder serviceInfo = new StringBuilder();
@@ -170,7 +161,7 @@ public class ListViewBookingCustomer extends Fragment{
             Calendar calendar = Calendar.getInstance();
             Date d = booking.getTimestamp().toDate();
             calendar.setTime(d);
-            String nameMonth = new SimpleDateFormat("MMMM").format(calendar.getTime()).toUpperCase();
+            @SuppressLint("SimpleDateFormat") String nameMonth = new SimpleDateFormat("MMMM").format(calendar.getTime()).toUpperCase();
             holder.txtMonth.setText(nameMonth);
             holder.btBooking.setTag(position);
             holder.cardView.setTag(position);
@@ -180,21 +171,15 @@ public class ListViewBookingCustomer extends Fragment{
             } else {
                 holder.btBooking.setVisibility(View.GONE);
             }
-            holder.btBooking.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            holder.btBooking.setOnClickListener(v -> {
 
-                }
             });
-            holder.cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = (int) v.getTag();
-                    Intent intent = new Intent(context, ConsultBookingDetail.class);
-                    intent.putExtra("Booking", bookings.get(position).getId());
-                    intent.putExtra("Business", bookings.get(position).getIdBusiness());
-                    context.startActivity(intent);
-                }
+            holder.cardView.setOnClickListener(v -> {
+                int position1 = (int) v.getTag();
+                Intent intent = new Intent(context, ConsultBookingDetail.class);
+                intent.putExtra("Booking", bookings.get(position1).getId());
+                intent.putExtra("Business", bookings.get(position1).getIdBusiness());
+                context.startActivity(intent);
             });
 
         }

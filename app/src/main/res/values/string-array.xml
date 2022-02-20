@@ -56,5 +56,8 @@
         <item name="fifty">50m</item>
         <item name="fifty_five">55m</item>
     </string-array>
+    <string-array name="settings">
+        <item name="logout">Cerrar Sesión</item>
+    </string-array>
 
 </resources>
