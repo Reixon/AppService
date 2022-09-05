@@ -1,4 +1,4 @@
-<resources >
+<resources>
     <string name="app_name">AppService</string>
 
     <!-- Buttons -->
@@ -21,6 +21,10 @@
     <string name="msg_error_invalid_email">El formato del email no es valido</string>
     <string name="msg_error_communication_data_no_update">Ocurrió un error al subir los datos</string>
     <string name="msg_error_communication_user_update">Ocurrió un error al registrar el usuario</string>
+
+    <!-- General Messages -->
+    <string name="msg_confirmation">Si</string>
+    <string name="msg_negation">No</string>
 
     <!-- LOGIN -->
     <string name="title_login">Inicia sesión con tu email</string>
@@ -85,6 +89,7 @@
 
     <!-- Pantalla vista negocio-->
     <string name="title_services">Servicios disponibles</string>
+    <string name="text_resume_schedule">%1$s %2$s %3$s</string>
     <string name="hint_search_service">Buscar servicio</string>
     <string name="hint_bt_booking">RESERVAR</string>
 
@@ -106,6 +111,7 @@
 
     <!-- Pantalla perfil -->
     <string name="title_profil">Perfil</string>
+    <string name="message_logout">¿Quiere cerrar la sesión?</string>
 
     <!--Menú Business -->
     <string name="item_customer">Clientes</string>
@@ -117,9 +123,24 @@
     <string name="explication_permissions">La aplicación necesita los permiso para
         localizar los servicios más cercanos a usted</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Calendar</string>
+
+    <!-- Pantalla NEGOCIO -->
+
+    <!--Pantalla calendario negocio -->
+    <string name="floating_button_today">Hoy</string>
+
+    <!-- New Booking -->
+    <string name="title_new_booking">NUEVA CITA</string>
+    <string name="et_name_customer">Nuevo del cliente</string>
+    <string name="name_customer">Cliente</string>
+    <string name="et_service">SERVICIO:</string>
+    <string name="select_service">Seleccionar Servicio</string>
+    <string name="et_date_time">Fecha y Hora</string>
+    <string name="et_additional_information">INFORMACIÓN ADICIONAL</string>
+    <string name="note_only_employers">Nota Interna (Visible sólo pro los trabajadores)</string>
+    <string name="note_customer">Mensaje para el Cliente</string>
+    <string name="occasional_customer">De paso</string>
+
     <!-- Preference Titles -->
-    <string name="log_header">Cerrar Sesión</string>
 
 </resources>

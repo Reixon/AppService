@@ -37,7 +37,6 @@
             android:id="@+id/view_pager_grid"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-
             android:layout_below="@id/layout_title"/>
 
         <HorizontalScrollView

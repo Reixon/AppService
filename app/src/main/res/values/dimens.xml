@@ -2,6 +2,12 @@
 <resources>
     <dimen name="title_step_register">20sp</dimen>
     <dimen name="editText">15sp</dimen>
+
+    <dimen name="nameCustomerDimensionBooking">15sp</dimen>
+    <dimen name="txtHourBooking">14sp</dimen>
+    <dimen name="txtServices">12sp</dimen>
+
+    <dimen name="txtHoursBookingBusiness">11sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <!--
     Because the window insets on round devices are larger than 15dp, this padding only applies

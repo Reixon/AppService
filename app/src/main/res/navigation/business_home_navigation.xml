@@ -7,21 +7,21 @@
 
     <fragment
         android:id="@+id/bookings"
-        android:name="com.myproject.appservice.controllers.ViewMainBusiness.CalendarBusiness"
+        android:name="com.myproject.appservice.controllers.calendarBusiness.CalendarBusinessFragment"
         android:label="fragment_calendar_business"
         tools:layout="@layout/fragment_calendar_business" >
-        <action
-            android:id="@+id/action_calendar_business_to_customerView2"
-            app:destination="@id/customer" />
     </fragment>
     <fragment
         android:id="@+id/customer"
-        android:name="com.myproject.appservice.controllers.ViewMainBusiness.CustomerView"
+        android:name="com.myproject.appservice.controllers.viewMainBusiness.CustomerView"
         android:label="fragment_customer_view"
         tools:layout="@layout/fragment_customers_view" >
-        <action
-            android:id="@+id/action_customer_to_settingFragmentBusiness"
-            app:destination="@id/settingFragmentBusiness" />
+    </fragment>
+    <fragment
+        android:id="@+id/profile_business"
+        android:name="com.myproject.appservice.controllers.viewMainBusiness.ProfileViewBusiness"
+        android:label="fragment_customer_view"
+        tools:layout="@layout/fragment_customers_view" >
     </fragment>
 
 </navigation>

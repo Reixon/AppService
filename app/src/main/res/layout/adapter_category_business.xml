@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
-    tools:context=".controllers.ViewMainCustomer.ServiceSearchActivity.ServiceSearchActivity">
+    tools:context=".controllers.viewMainCustomer.ServiceSearchActivity.ServiceSearchActivity">
     
     <CheckBox
         android:id="@+id/checkbox"

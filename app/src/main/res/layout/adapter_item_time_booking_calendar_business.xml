@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="labelColor"
+            type="int" />
+    </data>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/root"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            tools:context=".controllers.calendarBusiness.TimeLineView">
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginStart="20dp"
+                android:background="@{labelColor}"
+                app:layout_constraintBottom_toBottomOf="@+id/timeline_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/timeline_label"
+                app:layout_constraintTop_toTopOf="@+id/timeline_label"
+                tools:background="#5C5C5C" />
+
+            <TextView
+                android:id="@+id/timeline_label"
+                android:layout_width="45sp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:textAlignment="textEnd"
+                android:textColor="@{labelColor}"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="12 PM"
+                tools:textColor="#5C5C5C" />
+
+<!--            <TextView-->
+<!--                android:id="@+id/txt15Minute"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="25dp"-->
+<!--                android:gravity="end"-->
+<!--                android:layout_alignEnd="@id/timeline_label"-->
+<!--                android:textSize="@dimen/txtHoursBookingBusiness"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/timeline_label"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/timeline_label"-->
+<!--                tools:text="15" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/txt30Minute"-->
+<!--                android:layout_below="@+id/txt15Minute"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="25dp"-->
+<!--                android:layout_alignEnd="@+id/txt15Minute"-->
+<!--                android:textSize="@dimen/txtHoursBookingBusiness"-->
+<!--                android:text="30"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/txt15Minute"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/txt15Minute"-->
+<!--                android:gravity="end" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/txt45Minute"-->
+<!--                android:layout_below="@+id/txt30Minute"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="25dp"-->
+<!--                android:text="45"-->
+<!--                android:layout_alignEnd="@+id/txt30Minute"-->
+<!--                android:textSize="@dimen/txtHoursBookingBusiness"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/txt30Minute"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/txt30Minute"-->
+<!--                android:gravity="end" />-->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp"
+            android:background="?attr/backgroundColor">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/news_business"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:text="OFERTAS" />
+
+                <HorizontalScrollView
+                    android:id="@+id/hsv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:fillViewport="true"
+                    android:measureAllChildren="false"
+                    android:layout_below="@id/news_business"
+                    android:scrollbars="none">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal" >
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:id="@+id/imgBusiness1"
+                                android:layout_width="150dp"
+                                android:layout_height="150dp"
+                                android:background="@drawable/border_photo"
+                                tools:src="@drawable/ic_image_24" />
+                            <TextView
+                                android:id="@+id/title_business_notice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_below="@+id/imgBusiness1"
+                                android:layout_alignEnd="@+id/imgBusiness1"
+                                android:text="hola"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/address_business_notice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="20dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignEnd="@id/imgBusiness1"
+                                android:layout_below="@+id/title_business_notice"
+                                android:text="hola" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </RelativeLayout>
+        </FrameLayout>
+</layout>

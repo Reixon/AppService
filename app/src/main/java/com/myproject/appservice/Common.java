@@ -54,6 +54,8 @@ public class Common {
     public static String rangeHours;
     public static String idEmployee;
 
+    /* BUSINESS*/
+    public static Schedule schedulesDay;
 
     /** BUSINESS**/
     public static String idBusiness;

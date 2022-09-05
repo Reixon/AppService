@@ -1,14 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
     <FrameLayout
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".controllers.ViewMainBusiness.CalendarBusiness">
-        <androidx.recyclerview.widget.RecyclerView
+        tools:context=".controllers.calendarBusiness.CalendarBusinessFragment">
+
+        <RelativeLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/title_calendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Hoy"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="LUN"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="MAR"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="MIE"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="JUE"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="VIE"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="SÁB"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="DOM"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/daysRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"/>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="true"
+                android:scrollbars="none"
+                android:overScrollMode="never">
+
+                <com.myproject.appservice.controllers.calendarBusiness.TimeLineView
+                    android:id="@+id/timeline_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startLabel="9"
+                    app:backgroundColor="@color/white"
+                    app:labelColor="@color/lightGrey"
+                    app:eventBackground="@android:color/holo_blue_dark"
+                    app:eventNameColor="@color/white"
+                    app:eventTimeColor="@color/white" />
+
+            </ScrollView>
+
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/todayFloatingButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            android:gravity="center"
+            android:layout_margin="16dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:clickable="true"
+            android:visibility="gone"
+            android:text="@string/floating_button_today" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addFloatingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            app:tint="@color/white"
+            android:backgroundTint="@color/black"
+            app:srcCompat="@drawable/ic_add_24" />
+
+        </RelativeLayout>
     </FrameLayout>
 </layout>

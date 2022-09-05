@@ -2,21 +2,23 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/customer_home"
-    app:startDestination="@id/home">
+    app:startDestination="@id/home" >
 
     <fragment
         android:id="@+id/home"
-        android:name="com.myproject.appservice.controllers.ViewMainCustomer.HomeCustomerView"
-        android:label="HomeCustomerView" />
+        android:name="com.myproject.appservice.controllers.viewMainCustomer.HomeCustomerView"
+        android:label="HomeCustomerView" >
+    </fragment>
 
     <fragment
         android:id="@+id/bookings"
-        android:name="com.myproject.appservice.controllers.ViewMainCustomer.ListViewBookingCustomer"
-        android:label="ListViewBookingCustomer" />
+        android:name="com.myproject.appservice.controllers.viewMainCustomer.ListViewBookingCustomer"
+        android:label="ListViewBookingCustomer" >
+    </fragment>
 
     <fragment
         android:id="@+id/setting"
-        android:name="com.myproject.appservice.controllers.ViewMainCustomer.ProfilView"
+        android:name="com.myproject.appservice.controllers.viewMainCustomer.ProfileView"
         android:label="SettingsFragment" />
 
 </navigation>

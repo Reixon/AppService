@@ -9,16 +9,20 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="-1dp"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/business_home_navigation"
-        android:layout_above="@string/appbar_scrolling_view_behavior"/>
+        app:navGraph="@navigation/business_home_navigation" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemTextColor="@android:color/background_light"
-        app:itemIconTint="@android:color/background_light"
+        app:itemTextColor="@android:color/darker_gray"
+        app:itemIconTint="@android:color/darker_gray"
+        app:itemBackground="@android:color/black"
         android:layout_alignParentBottom="true"
         app:menu="@menu/main_menu_business" />
 </RelativeLayout>

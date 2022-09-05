@@ -1,8 +1,11 @@
 package com.myproject.appservice.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@IgnoreExtraProperties
 public class Schedule implements Serializable {
 
     private int id;

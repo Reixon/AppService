@@ -2,20 +2,19 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
     buildToolsVersion '30.0.3'
     buildFeatures {
+        //noinspection DataBindingWithoutKapt
         dataBinding true
     }
 
     defaultConfig {
         applicationId "com.myproject.appservice"
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -25,49 +24,52 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility "1.8"
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
 
-    implementation 'androidx.core:core:1.5.0-beta01'
-    implementation 'com.android.support:design:30.0.0'
+    implementation 'androidx.core:core:1.9.0-alpha05'
+    implementation 'com.android.support:design:32'
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.6.1'
 
-    implementation 'com.google.firebase:firebase-firestore:22.0.1'
-    implementation 'com.google.firebase:firebase-auth:20.0.2'
+    implementation 'com.google.firebase:firebase-firestore:24.2.0'
+    implementation 'com.google.firebase:firebase-auth:21.0.6'
 
-    implementation 'com.google.android.libraries.places:places:2.4.0'
-    implementation 'com.google.firebase:firebase-database:19.6.0'
+    implementation 'com.google.android.libraries.places:places:2.6.0'
+    implementation 'com.google.firebase:firebase-database:20.0.5'
 
     /* Firebase Geofire*/
-    implementation 'com.firebase:geofire-java:3.0.0'
+    implementation 'com.firebase:geofire-android:3.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
-    implementation 'androidx.navigation:navigation-fragment:2.3.2'
-    implementation 'androidx.navigation:navigation-ui:2.3.2'
-    implementation 'androidx.recyclerview:recyclerview:1.2.0-beta01'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.5.0'
+    implementation 'androidx.navigation:navigation-ui:2.5.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0-beta01'
 
-  //  implementation 'me.jlurena:revolvingweekview:1.0.0'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.wear:wear:1.1.0'
+    //  implementation 'me.journal:revolutionize:1.0.0'
+    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.wear:wear:1.2.0'
 
-    testImplementation 'junit:junit:4.13.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'com.shuhart.stepview:stepview:1.5.1'
 
     implementation 'com.jakewharton:butterknife:6.1.0'
-    compileOnly 'com.google.android.wearable:wearable:2.8.1'
+    compileOnly 'com.google.android.wearable:wearable:2.9.0'
 
+    // dates
+    implementation 'joda-time:joda-time:2.9.4'
 }
-group = 'noman.weekcalendar'
-version = '1.0.6'
+repositories {
+    mavenCentral()
+}

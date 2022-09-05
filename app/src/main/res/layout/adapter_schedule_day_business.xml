@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:background="@color/white"
-    tools:context=".controllers.ViewMainCustomer.ServiceSearchActivity.ServiceSearchActivity">
+    tools:context=".controllers.viewMainCustomer.ServiceSearchActivity.ServiceSearchActivity">
 
     <TextView
         android:id="@+id/txtOpeningHours"

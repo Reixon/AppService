@@ -12,14 +12,12 @@ public class Service implements Serializable {
     private String time;
     private float price;
 
-    public Service(){
+    public Service(){ }
 
-    }
-
-    public Service(String nombre, String duracion, float precio) {
+    public Service(String nombre, String time, float cost) {
         this.name = nombre;
-        this.time = duracion;
-        this.price = precio;
+        this.time = time;
+        this.price = cost;
     }
 
     public String getId() {

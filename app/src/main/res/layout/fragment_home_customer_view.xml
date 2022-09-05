@@ -5,12 +5,12 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".controllers.ViewMainCustomer.HomeCustomerView">
+        android:layout_margin="15dp"
+        tools:context=".controllers.viewMainCustomer.HomeCustomerView">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_margin="15dp"
             android:layout_height="match_parent" >
 
             <TextView
@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <RelativeLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/white">
                     <TextView
@@ -114,47 +114,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <HorizontalScrollView
-                android:id="@+id/kindBusinessHorizontalScroll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:scrollbars="none"
-                android:background="@color/white"
-                android:layout_below="@id/view_pager_grid" >
-
-                <LinearLayout
-                    android:id="@+id/layout_kind_business"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_vertical">
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/black">
-                <HorizontalScrollView
-                    android:id="@+id/marketingHorizontalScroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:scrollbars="none"
-                    android:background="@color/white"
-                    android:layout_below="@id/view_pager_grid" >
-
-                    <LinearLayout
-                        android:id="@+id/layout_marketing"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center_vertical">
-                    </LinearLayout>
-                </HorizontalScrollView>
-            </LinearLayout>
-
+           <include
+               android:id="@+id/include_marketing"
+               layout="@layout/fragment_horizontal_notice_business"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="15dp" />
 
         </LinearLayout>
 

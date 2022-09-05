@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/white"
-        tools:context=".controllers.ViewMainCustomer.BookingActivity.BookingServiceActivity">
+        tools:context=".controllers.viewMainCustomer.BookingActivity.BookingServiceActivity">
 
         <ImageButton
             android:id="@+id/back_arrow"

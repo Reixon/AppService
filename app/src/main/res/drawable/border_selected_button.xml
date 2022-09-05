@@ -3,7 +3,7 @@
     android:shape="rectangle">
     <stroke
         android:width="3dp"
-        android:color="@color/colorPrimary" />
+        android:color="@color/colorBookingButton" />
     <corners
         android:radius="3dp" />
 </shape>

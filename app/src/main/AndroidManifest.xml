@@ -3,8 +3,6 @@
     package="com.myproject.appservice">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <uses-feature android:name="android.hardware.type.watch" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -20,28 +18,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/whiteTheme">
+        <activity
+            android:name=".controllers.calendarBusiness.bookingBusinessDetail.ActivityNewBooking"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAncFbRvSGXIg4V0Sjtj1_x0C_ghEPSkIw" />
 
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".controllers.Login.LoginActivity" />
-        <activity android:name=".controllers.RegisterBusinessActivity.RegisterBusinessActivity" />
-        <activity android:name=".controllers.RegisterCustomer.RegisterCustomerActivity" />
-        <activity android:name=".controllers.ViewMainCustomer.ViewBusiness.ConsultBusinessView" />
-        <activity android:name=".controllers.ViewMainBusiness.ViewMainBusiness" />
-        <activity android:name=".controllers.ViewMainCustomer.ViewMainCustomer" />
-        <activity android:name=".controllers.ViewMainCustomer.BookingActivity.BookingServiceActivity" />
-        <activity android:name=".controllers.ViewMainCustomer.ServiceSearchActivity.ServiceSearchActivity" />
-        <activity android:name=".controllers.ViewMainCustomer.ConsultBookingDetail.ConsultBookingDetail" />
+        <activity android:name=".controllers.login.LoginActivity" />
+        <activity android:name=".controllers.registerBusinessActivity.RegisterBusinessActivity" />
+        <activity android:name=".controllers.registerCustomer.RegisterCustomerActivity" />
+        <activity android:name=".controllers.viewMainCustomer.ViewBusiness.ConsultBusinessView" />
+        <activity android:name=".controllers.viewMainBusiness.ViewMainBusinessActivity" />
+        <activity android:name=".controllers.viewMainCustomer.ViewMainCustomer" />
+        <activity android:name=".controllers.viewMainCustomer.BookingActivity.BookingServiceActivity" />
+        <activity android:name=".controllers.viewMainCustomer.ServiceSearchActivity.ServiceSearchActivity" />
+        <activity android:name=".controllers.viewMainCustomer.ConsultBookingDetail.ConsultBookingDetail" />
     </application>
 
 </manifest>
