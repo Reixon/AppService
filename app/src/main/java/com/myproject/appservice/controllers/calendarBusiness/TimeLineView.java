@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -22,7 +20,6 @@ import androidx.core.view.GestureDetectorCompat;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.myproject.appservice.Common;
 import com.myproject.appservice.R;
@@ -40,13 +37,9 @@ public class TimeLineView extends LinearLayout {
 
     public static int TOTAL = 24;
     public static int END_LABEL;
-    final float SELECT_VIBRATION_TIME_MS = 60L;
-    final int DEFAULT_START_LABEL = 7;
-    final int DEFAULT_BG_COLOR = Color.BLACK;
+    final int DEFAULT_START_LABEL = 0;
     final int DEFAULT_LABEL_COLOR = Color.DKGRAY;
     final int DEFAULT_TEXT_COLOR = Color.BLACK;
-    final String [] DAYS = getResources().getStringArray(R.array.array_days_week);
-    final int NUMDAYSOFWEEK = CalendarUtils.selectedDate.getDayOfWeek().getValue()-1;
 
     private ArrayList<AdapterItemTimeBookingCalendarBusinessBinding> timelineViews;
     private ArrayList<View> timelineItemViews;
@@ -58,7 +51,6 @@ public class TimeLineView extends LinearLayout {
     private ArrayList<View> timeLineNoWorkView;
     private ArrayList<EventI> timeLineNoWorkItems;
     private ArrayList<String> timeBreak;
-    private Paint paint;
 
     private int openTime, closeTime;
 
@@ -83,14 +75,15 @@ public class TimeLineView extends LinearLayout {
 
     private void constructor(AttributeSet attrs){
         this.attrs = attrs;
+        initListeners();
+
         loadData();
 
-        initListeners();
+
 
     }
 
     public void loadData(){
-        paint = new Paint();
         timelineViews = new ArrayList<>();
         timelineItemViews = new ArrayList<>();
         timeLineItems = new ArrayList<>();
@@ -100,7 +93,7 @@ public class TimeLineView extends LinearLayout {
         timeLineNoWorkView = new ArrayList<>();
         timeLineNoWorkItems = new ArrayList<>();
         timeBreak = new ArrayList<>();
-     //   openTime = DEFAULT_START_LABEL;
+        openTime = DEFAULT_START_LABEL;
         closeTime = TOTAL;
         END_LABEL = TOTAL;
         int dayOfWeek = CalendarUtils.selectedDate.getDayOfWeek().getValue()-1;
@@ -115,11 +108,9 @@ public class TimeLineView extends LinearLayout {
                 .get();
         schedulesRef.addOnCompleteListener(task -> {
             if (task.isSuccessful() ){
-                ArrayList<Schedule> schedulesBooking = new ArrayList<Schedule>();
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Log.d("TAG", document.getId() + " => " + document.getData());
-                    Schedule schedule = document.toObject(Schedule.class);
-                    schedulesBooking.add(schedule);
+                Schedule schedule = null;
+                if(task.getResult().size() > 0){
+                    schedule =  task.getResult().getDocuments().get(0).toObject(Schedule.class);
                 }
                 TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.TimelineView,
                         0, 0);
@@ -128,36 +119,21 @@ public class TimeLineView extends LinearLayout {
                 eventTimeColor = typedArray.getColor(R.styleable.TimelineView_eventTimeColor, DEFAULT_TEXT_COLOR);
                 eventBg = typedArray.getColor(R.styleable.TimelineView_eventBackground, getColor(R.attr.colorPrimary));
                 setOrientation(VERTICAL);
-//                    if(schedulesBooking.size() == 0){
-//                        closeTime = 24;
-//                        for (int i = 0; i < closeTime; i++) {
-//                            BreakViewBookingCalendarBinding binding = BreakViewBookingCalendarBinding.inflate(LayoutInflater.from(getContext()));
-//                            binding.setEvent(new EventI(new Event("", "", i*3600, 3600*(i+1)), openTime));
-//                            binding.cardView.setCardBackgroundColor(Color.LTGRAY);
-//                            binding.setConstrained(true);
-//                            timeLineNoWorkView.add(binding.getRoot());
-//                            binding.executePendingBindings();
-//                        }
-//                    } else {
-                    loadOpenAndClose(schedulesBooking);
-//                    }
+                loadOpenAndClose(schedule);
                 //initLabels();
-
-                getTimelineEvents();
             } else {
                 //Tratar error
+                System.out.println("Error en loadData calendario");
             }
         });
     }
 
-    private void loadOpenAndClose(ArrayList<Schedule> schedulesBooking){
-        String[] range = null;
-        Schedule schedule = null;
-        if(schedulesBooking.size()> 0) {
-            schedule = schedulesBooking.get(0);
+    private void loadOpenAndClose(Schedule schedule){
+        String[] range;
+        if(schedule != null) {
             range = schedule.getSchedulesDay().get(0).split(" - ");
             openTime = Integer.parseInt(range[0].split(":")[0]);
-            range = schedule.getSchedulesDay().get(schedulesBooking.get(0).getSchedulesDay().size()-1).split(" - ");
+            range = schedule.getSchedulesDay().get(schedule.getSchedulesDay().size()-1).split(" - ");
 
             closeTime = Integer.parseInt(range[1].split(":")[0]);
             if(closeTime >= 1 && closeTime <= 23){
@@ -165,29 +141,23 @@ public class TimeLineView extends LinearLayout {
             } else if(closeTime == 0){
                 closeTime = 24;
             }
-//        if (closeTime < 23 && range != null && !range[1].split(":")[1].contains("00")) {
-//            closeTime++;
-//        }
         }
 
-        if(closeTime > openTime){
-            closeTime = closeTime - openTime;
-        } else {
-            closeTime = openTime - closeTime;
-        }
-
+        //update timeline
 //        timelineEvents.add(new Event("Orgy", "Cortar el pelo", 0, 3600*6+30*60));
 //        setTimeLineEvents();
         setStartTime();
         if(schedule != null && schedule.getSchedulesDay().size()>=1) {
-            String iniH = "";
+            String iniH;
             String finH = "";
             int i=0;
             for (String h : schedule.getSchedulesDay()) {
                 range = h.split(" - ");
                 if(i != 0){
                     iniH = range[0];
-                    timeBreak.add(finH + " - " + iniH);
+                    if(!iniH.equals(finH)) {
+                        timeBreak.add(finH + " - " + iniH);
+                    }
                 }
                 finH = range[1];
                 i++;
@@ -205,7 +175,7 @@ public class TimeLineView extends LinearLayout {
             int mInit = Integer.parseInt((it.split(" - ")[0]).split(":")[1]);
             int hFin = Integer.parseInt((it.split(" - ")[1]).split(":")[0]);
             int mFin = Integer.parseInt((it.split(" - ")[1]).split(":")[1]);
-            int x = 0;
+            int x;
             for(int i = hInit; i< hFin; i++){
                 x = i + 1;
                 int calIn, calFin;
@@ -305,10 +275,10 @@ public class TimeLineView extends LinearLayout {
         if(timelineViews.size() > 0) {
             int divWidth = timelineViews.get(0).divider.getWidth();
             for (int index = 0; index < timelineItemViews.size(); index++) {
-                int left = (int) (getRight() - divWidth);
+                int left = (getRight() - divWidth);
                 int top = getPosFromIndex(timeLineItems.get(index).getStartIndex());
                 int bottom = getPosFromIndex(timeLineItems.get(index).getEndIndex());
-                int right = (int) (getRight());
+                int right = (getRight());
 
                 int widthSpec = MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY);
                 int heightSpec = MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY);
@@ -317,10 +287,10 @@ public class TimeLineView extends LinearLayout {
             }
 
             for (int index = 0; index < timeLineNoWorkView.size(); index++) {
-                int left = (int) (getRight() - divWidth);
+                int left = (getRight() - divWidth);
                 int top = getPosFromIndex(timeLineNoWorkItems.get(index).getStartIndex());
                 int bottom = getPosFromIndex(timeLineNoWorkItems.get(index).getEndIndex());
-                int right = (int) (getRight());
+                int right = (getRight());
 
                 int widthSpec = MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY);
                 int heightSpec = MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY);
@@ -337,29 +307,29 @@ public class TimeLineView extends LinearLayout {
         if(timelineViews.size() > 0) {
             int divWidth = timelineViews.get(0).divider.getWidth();
             for (int index = 0; index < timelineItemViews.size(); index++) {
-                int left = (int) (getRight() - divWidth);
+                int left = (getRight() - divWidth);
                 int top = getPosFromIndex(timeLineItems.get(index).getStartIndex());
                 int bottom = getPosFromIndex(timeLineItems.get(index).getEndIndex());
-                int right = (int) (getRight());
+                int right = (getRight());
 
                 timelineItemRects.get(index).set(left, top, right, bottom);
 
                 canvas.save();
-                canvas.translate((int) (left), (int) (top));
+                canvas.translate((left), (top));
                 timelineItemViews.get(index).draw(canvas);
                 canvas.restore();
             }
 
             for (int index = 0; index < timeLineNoWorkView.size(); index++) {
-                int left = (int) (getRight() - divWidth);
+                int left = (getRight() - divWidth);
                 int top = getPosFromIndex(timeLineNoWorkItems.get(index).getStartIndex());
                 int bottom = getPosFromIndex(timeLineNoWorkItems.get(index).getEndIndex());
-                int right = (int) (getRight());
+                int right = (getRight());
 
                 timeLineNoWorkRects.get(index).set(left, top, right, bottom);
 
                 canvas.save();
-                canvas.translate((int) (left), (int) (top));
+                canvas.translate((left), (top));
                 timeLineNoWorkView.get(index).draw(canvas);
                 canvas.restore();
             }
@@ -377,11 +347,6 @@ public class TimeLineView extends LinearLayout {
     }
 
     private Integer getColor(Integer colorAttr) {
-//        TypedValue typedValue = new TypedValue();
-//        Resources.Theme theme = getContext().getTheme();
-//        theme.resolveAttribute(colorAttr, typedValue, true);
-//        Integer color = typedValue.data;
-//        return color;
 
         TypedValue typedValue = new TypedValue();
         TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[]{colorAttr});
@@ -391,7 +356,7 @@ public class TimeLineView extends LinearLayout {
     }
 
     private String getTime(Integer raw, Integer start) {
-        String state = "AM";
+      //  String state = "AM";
         int time = (raw + start) % TOTAL;
 
 //        if (time >= 12) state = "PM";
@@ -401,9 +366,9 @@ public class TimeLineView extends LinearLayout {
         return String.format("%2d", time);
     }
 
-    private float dpToPx(Integer dp){
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.floatValue(), getResources().getDisplayMetrics());
-    }
+//    private float dpToPx(Integer dp){
+//        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.floatValue(), getResources().getDisplayMetrics());
+//    }
 
     private Integer getPosFromIndex(Float index)  {
         int l = (int) Math.floor(index);
@@ -413,10 +378,6 @@ public class TimeLineView extends LinearLayout {
         int hVal = timelineViews.get(h).getRoot().getTop() + timelineViews.get(l).divider.getTop();
 
         return (int) (lVal + (index - l) * (hVal - lVal));
-    }
-
-    public ArrayList<Event> getTimelineEvents() {
-        return timelineEvents;
     }
 
     private void initListeners(){

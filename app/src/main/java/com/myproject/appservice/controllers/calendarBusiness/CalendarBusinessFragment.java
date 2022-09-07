@@ -1,5 +1,6 @@
 package com.myproject.appservice.controllers.calendarBusiness;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +13,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.myproject.appservice.controllers.calendarBusiness.bookingBusinessDetail.ActivityNewBooking;
 import com.myproject.appservice.databinding.FragmentCalendarBusinessBinding;
-import com.myproject.appservice.models.Schedule;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,7 +29,6 @@ public class CalendarBusinessFragment extends Fragment implements WeekCalendarBu
     private ExtendedFloatingActionButton todayFloating;
     private LocalDate today;
     private FragmentCalendarBusinessBinding binding;
-    private ArrayList<Schedule> schedules;
 
     @Override
     public void onStart() {
@@ -45,24 +46,20 @@ public class CalendarBusinessFragment extends Fragment implements WeekCalendarBu
         monthYearText = binding.titleCalendar;
         calendarRecyclerView = binding.daysRecyclerView;
         todayFloating = binding.todayFloatingButton;
+        FloatingActionButton addBooking = binding.addFloatingButton;
 
         setWeekView();
+        addBooking.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ActivityNewBooking.class);
+            requireContext().startActivity(intent);
+        });
+
         todayFloating.setOnClickListener(v -> {
-            CalendarUtils.selectedDate =  today;
-            setWeekView();
+            updateCalendar(today);
             todayFloating.setVisibility(View.GONE);
         });
 
         return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-       // binding.timelineView.getTimelineEvents().add(new Event("Orgy", "Cortar el pelo", 3600*9, (3600*10)+900));
-       // binding.timelineView.setTimeLineEvents();
-
     }
 
     private void setWeekView(){
@@ -90,6 +87,10 @@ public class CalendarBusinessFragment extends Fragment implements WeekCalendarBu
     public void onItemClick(int position,  LocalDate date) {
         if(!today.equals(date)){ todayFloating.setVisibility(View.VISIBLE); }
         else { todayFloating.setVisibility(View.GONE); }
+        updateCalendar(date);
+    }
+
+    private void updateCalendar(LocalDate date){
         CalendarUtils.selectedDate = date;
         setWeekView();
         binding.timelineView.loadData();

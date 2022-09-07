@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class EventI {
 
@@ -42,9 +43,12 @@ public class EventI {
 
     private Float getHourIndex(Long time, Integer start ) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("HH mm",Locale.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("HH mm", Locale.forLanguageTag("es-ES"));
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        System.out.println(formatter.format(new Date(time*1000)));
 
-        DateFormat df = new SimpleDateFormat("dd:MM:yy HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("dd:MM:yy HH:mm:ss", Locale.forLanguageTag("es-ES"));
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         System.out.println(df.format(new Date(time*1000)));
 
         String[] hm = formatter.format(new Date(time * 1000)).split(" ");

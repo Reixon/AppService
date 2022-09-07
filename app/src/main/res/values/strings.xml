@@ -128,10 +128,17 @@
 
     <!--Pantalla calendario negocio -->
     <string name="floating_button_today">Hoy</string>
+    <string name="monday">LUN</string>
+    <string name="tuesday">MAR</string>
+    <string name="wednesday">MIE</string>
+    <string name="thursday">JUE</string>
+    <string name="friday">VIE</string>
+    <string name="saturday">SAB</string>
+    <string name="sunday">DOM</string>
 
     <!-- New Booking -->
     <string name="title_new_booking">NUEVA CITA</string>
-    <string name="et_name_customer">Nuevo del cliente</string>
+    <string name="et_name_customer">Nuevo cliente</string>
     <string name="name_customer">Cliente</string>
     <string name="et_service">SERVICIO:</string>
     <string name="select_service">Seleccionar Servicio</string>
