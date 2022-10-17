@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,8 +17,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -81,11 +80,6 @@ public class ServiceSearchActivity extends AppCompatActivity {
         list.setAdapter(adapterListBusiness);
 
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         showProgress(true);
         requestPermissionsLocalization();
 
@@ -93,13 +87,11 @@ public class ServiceSearchActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("geoFire"));
         initializeListeners();
-        showProgress(false);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        RelativeLayout relativeLayout = binding.generalLayout;
+        LinearLayout relativeLayout = binding.generalLayout;
         relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
         relativeLayout.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
@@ -201,6 +193,7 @@ public class ServiceSearchActivity extends AppCompatActivity {
             public void onKeyEntered(String key, GeoLocation location) {
                 Log.i(TAG, "entered "+key+" - Geo "+location.latitude+", "+location.longitude);
             //    distanceCalculated(location);
+
                 DocumentReference businessRef = FirebaseFirestore.getInstance()
                         .collection("Businesses").document(key);
                 businessRef.get().addOnCompleteListener(task -> {
@@ -229,12 +222,14 @@ public class ServiceSearchActivity extends AppCompatActivity {
 
             @Override
             public void onGeoQueryReady() {
-                //     Log.i(TAG, "ready ");
+                     Log.i(TAG, "ready ");
+                showProgress(false);
             }
 
             @Override
             public void onGeoQueryError(DatabaseError error) {
                 Log.i(TAG, "error ");
+                showProgress(false);
             }
         });
 
