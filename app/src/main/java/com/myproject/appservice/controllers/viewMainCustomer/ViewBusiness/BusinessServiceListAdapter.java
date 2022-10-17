@@ -76,6 +76,7 @@ public class BusinessServiceListAdapter extends RecyclerView.Adapter<BusinessSer
         float price = services.get(position).getPrice();
         String txtPrice = price + "€";
         holder.txtCost.setText(txtPrice);
+        holder.txtTime.setText(services.get(position).getTime());
         holder.txt_nameBusiness.setTextColor(Color.BLACK);
 
         holder.btBooking.setOnClickListener(new View.OnClickListener() {
