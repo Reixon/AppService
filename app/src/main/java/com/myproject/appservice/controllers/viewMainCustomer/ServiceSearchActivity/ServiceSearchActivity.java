@@ -1,7 +1,10 @@
 package com.myproject.appservice.controllers.viewMainCustomer.ServiceSearchActivity;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,12 +17,11 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -32,8 +34,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
@@ -41,17 +41,21 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.myproject.appservice.R;
 import com.myproject.appservice.controllers.viewMainCustomer.ViewBusiness.ConsultBusinessView;
+import com.myproject.appservice.databinding.ActivityServiceSearchBinding;
 import com.myproject.appservice.models.Business;
 
 import java.util.ArrayList;
 
 public class ServiceSearchActivity extends AppCompatActivity {
 
+    private ActivityServiceSearchBinding binding;
+
     private ListView list;
     private AdapterListBusiness adapterListBusiness;
     private EditText txt_edit;
     private ArrayList<Business> arrayBusiness;
     private Double latitude, longitude;
+    private View mProgressView;
 
     private FirebaseFirestore db;
     private double radius = 20;
@@ -65,26 +69,53 @@ public class ServiceSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_service_search);
-        list = (ListView) findViewById(R.id.listView);
-        txt_edit = (EditText) findViewById(R.id.txt_search_service);
+        binding = ActivityServiceSearchBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        list = binding.getRoot().findViewById(R.id.listView);
+        txt_edit = binding.getRoot().findViewById(R.id.txt_search_service);
+        mProgressView = findViewById(R.id.progress_circular);
 
         arrayBusiness = new ArrayList<>();
         adapterListBusiness = new AdapterListBusiness(getApplicationContext(), arrayBusiness);
         list.setAdapter(adapterListBusiness);
 
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showProgress(true);
         requestPermissionsLocalization();
 
         // Initialize db reference
         db = FirebaseFirestore.getInstance();
         geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("geoFire"));
         initializeListeners();
+        showProgress(false);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        RelativeLayout relativeLayout = binding.generalLayout;
+        relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        relativeLayout.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     private void requestPermissionsLocalization() {
@@ -94,7 +125,6 @@ public class ServiceSearchActivity extends AppCompatActivity {
                 String title = getResources().getString(R.string.title_use_location);
                 String message = getResources().getString(R.string.explication_permissions);
                 showExplanation(title, message, MY_PERMISSIONS);
-
             } else {
                 ActivityCompat.requestPermissions(this, new String[]
                         {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS);
@@ -173,17 +203,15 @@ public class ServiceSearchActivity extends AppCompatActivity {
             //    distanceCalculated(location);
                 DocumentReference businessRef = FirebaseFirestore.getInstance()
                         .collection("Businesses").document(key);
-                businessRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        DocumentSnapshot document = task.getResult();
-                        Business b = document.toObject(Business.class);
-                        if(b!=null) {
-                            arrayBusiness.add(b);
-                            adapterListBusiness.notifyDataSetChanged();
-                        }
+                businessRef.get().addOnCompleteListener(task -> {
+                    DocumentSnapshot document = task.getResult();
+                    Business b = document.toObject(Business.class);
+                    if(b!=null) {
+                        arrayBusiness.add(b);
+                        adapterListBusiness.notifyDataSetChanged();
                     }
                 });
+
             }
             @Override
             public void onKeyExited(String key) {
@@ -236,13 +264,10 @@ public class ServiceSearchActivity extends AppCompatActivity {
 
         adapterListBusiness.getFilter().filter(txt_edit.getText().toString());
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ServiceSearchActivity.this, ConsultBusinessView.class);
-                intent.putExtra("Business", arrayBusiness.get(position));
-                startActivity(intent);
-            }
+        list.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(ServiceSearchActivity.this, ConsultBusinessView.class);
+            intent.putExtra("Business", arrayBusiness.get(position));
+            startActivity(intent);
         });
 
         txt_edit.addTextChangedListener(new TextWatcher() {
