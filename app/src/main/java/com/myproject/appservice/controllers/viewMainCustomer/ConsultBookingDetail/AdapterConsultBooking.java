@@ -16,26 +16,26 @@ import com.myproject.appservice.models.Service;
 
 import java.util.ArrayList;
 
-public class AdapterListViewService extends RecyclerView.Adapter<AdapterListViewService.ViewHolder>{
+public class AdapterConsultBooking extends RecyclerView.Adapter<AdapterConsultBooking.ViewHolder>{
 
     private ArrayList<Service> services;
     private final Context context;
 
-    public AdapterListViewService(Context context, ArrayList<Service> services) {
+    public AdapterConsultBooking(Context context, ArrayList<Service> services) {
         this.context = context;
         this.services = services;
     }
 
     @NonNull
     @Override
-    public AdapterListViewService.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterConsultBooking.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view  = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_item_service_booking, parent,false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdapterListViewService.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterConsultBooking.ViewHolder holder, int position) {
         holder.txtService.setText(services.get(position).getName());
         float price = services.get(position).getPrice();
         String txtPrice = price + "€";

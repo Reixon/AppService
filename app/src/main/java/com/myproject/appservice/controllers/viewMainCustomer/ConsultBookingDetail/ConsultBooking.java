@@ -3,13 +3,11 @@ package com.myproject.appservice.controllers.viewMainCustomer.ConsultBookingDeta
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,19 +32,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
-public class ConsultBookingDetail extends AppCompatActivity {
+public class ConsultBooking extends AppCompatActivity {
 
     private ArrayList<Service> services;
     private TextView title;
     private View mProgressView;
     private ActivityConsultBookingDetailBinding binding;
-    private AdapterListViewService adapterService;
     private Booking booking;
     private RecyclerView listService;
     private ImageButton btBack;
     private Button btCancel, btChange;
     private SupportMapFragment mapFragment;
+    private String idBooking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +67,10 @@ public class ConsultBookingDetail extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         showProgress(true);
-        String idBooking = (String) getIntent().getExtras().get("Booking");
+        idBooking = (String) Objects.requireNonNull(getIntent().getExtras()).get("Booking");
 
-        DocumentReference docRef = (DocumentReference) FirebaseFirestore.getInstance()
+        assert idBooking != null;
+        DocumentReference docRef = FirebaseFirestore.getInstance()
                 .collection("Users")
                 .document(Common.idUser)
                 .collection("Booking")
@@ -79,6 +79,7 @@ public class ConsultBookingDetail extends AppCompatActivity {
         docRef.get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 booking=task.getResult().toObject(Booking.class);
+                assert booking != null;
                 services = booking.getServices();
                 Calendar calendar = Calendar.getInstance();
                 Date d = booking.getTimestamp().toDate();
@@ -95,53 +96,38 @@ public class ConsultBookingDetail extends AppCompatActivity {
                     btCancel.setVisibility(View.GONE);
                     btChange.setVisibility(View.GONE);
                 }
-            } else {
-
             }
             initialListeners();
-            showProgress(false);
         });
     }
 
     private void initialListeners(){
         listService.setHasFixedSize(true);
         listService.setLayoutManager(new LinearLayoutManager(this));
-        adapterService = new AdapterListViewService(this, services);
+        AdapterConsultBooking adapterService = new AdapterConsultBooking(this, services);
         listService.setAdapter(adapterService);
 
-        btChange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btChange.setOnClickListener(v -> {
 
-            }
         });
 
-        btCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btCancel.setOnClickListener(v -> {
 
-            }
         });
 
-        btBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                finish();
-            }
-        });
+        btBack.setOnClickListener(v -> finish());
+        showProgress(false);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        RelativeLayout relativeLayout = binding.generalLayout;
-        relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-        relativeLayout.animate().setDuration(shortAnimTime).alpha(
+        LinearLayout linearLayout = binding.layout;
+        linearLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        linearLayout.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+                linearLayout.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -154,7 +140,7 @@ public class ConsultBookingDetail extends AppCompatActivity {
         });
     }
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
