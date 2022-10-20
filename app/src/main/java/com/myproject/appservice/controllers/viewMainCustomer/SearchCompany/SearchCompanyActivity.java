@@ -1,4 +1,4 @@
-package com.myproject.appservice.controllers.viewMainCustomer.ServiceSearchActivity;
+package com.myproject.appservice.controllers.viewMainCustomer.SearchCompany;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -17,8 +17,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,18 +39,18 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.myproject.appservice.R;
-import com.myproject.appservice.controllers.viewMainCustomer.ViewBusiness.ConsultBusinessView;
-import com.myproject.appservice.databinding.ActivityServiceSearchBinding;
+import com.myproject.appservice.controllers.viewMainCustomer.ViewBusiness.ConsultBusinessActivity;
+import com.myproject.appservice.databinding.ActivityServiceSearchBusinessBinding;
 import com.myproject.appservice.models.Business;
 
 import java.util.ArrayList;
 
-public class ServiceSearchActivity extends AppCompatActivity {
+public class SearchCompanyActivity extends AppCompatActivity {
 
-    private ActivityServiceSearchBinding binding;
+    private ActivityServiceSearchBusinessBinding binding;
 
     private ListView list;
-    private AdapterListBusiness adapterListBusiness;
+    private AdapterSearchCompany adapterListBusiness;
     private EditText txt_edit;
     private ArrayList<Business> arrayBusiness;
     private Double latitude, longitude;
@@ -68,17 +68,16 @@ public class ServiceSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityServiceSearchBinding.inflate(getLayoutInflater());
+        binding = ActivityServiceSearchBusinessBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         list = binding.getRoot().findViewById(R.id.listView);
-        txt_edit = binding.getRoot().findViewById(R.id.txt_search_service);
-        mProgressView = findViewById(R.id.progress_circular);
+        txt_edit = binding.txtSearchService;
+        mProgressView = binding.circularProgress;
 
         arrayBusiness = new ArrayList<>();
-        adapterListBusiness = new AdapterListBusiness(getApplicationContext(), arrayBusiness);
+        adapterListBusiness = new AdapterSearchCompany(getApplicationContext(), arrayBusiness);
         list.setAdapter(adapterListBusiness);
-
 
         showProgress(true);
         requestPermissionsLocalization();
@@ -91,7 +90,7 @@ public class ServiceSearchActivity extends AppCompatActivity {
 
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        LinearLayout relativeLayout = binding.generalLayout;
+        RelativeLayout relativeLayout = binding.generalLayout;
         relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
         relativeLayout.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
@@ -123,7 +122,6 @@ public class ServiceSearchActivity extends AppCompatActivity {
             }
         } else {
             getLocation();
-
         }
     }
 
@@ -134,7 +132,7 @@ public class ServiceSearchActivity extends AppCompatActivity {
         txt.setText(message);
         builder.setView(txt);
         builder.setPositiveButton(R.string.btOk, (dialog, which) ->
-            ActivityCompat.requestPermissions(ServiceSearchActivity.this, new String[]
+            ActivityCompat.requestPermissions(SearchCompanyActivity.this, new String[]
                     {Manifest.permission.ACCESS_FINE_LOCATION}, permissionRequestCode));
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -172,7 +170,7 @@ public class ServiceSearchActivity extends AppCompatActivity {
                 }
             }
         };
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(ServiceSearchActivity.this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(SearchCompanyActivity.this);
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
             Location location = task.getResult();
@@ -260,7 +258,7 @@ public class ServiceSearchActivity extends AppCompatActivity {
         adapterListBusiness.getFilter().filter(txt_edit.getText().toString());
 
         list.setOnItemClickListener((parent, view, position, id) -> {
-            Intent intent = new Intent(ServiceSearchActivity.this, ConsultBusinessView.class);
+            Intent intent = new Intent(SearchCompanyActivity.this, ConsultBusinessActivity.class);
             intent.putExtra("Business", arrayBusiness.get(position));
             startActivity(intent);
         });

@@ -1,4 +1,4 @@
-package com.myproject.appservice.controllers.viewMainCustomer.ServiceSearchActivity;
+package com.myproject.appservice.controllers.viewMainCustomer.SearchCompany;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class AdapterListBusiness extends BaseAdapter implements Filterable {
+public class AdapterSearchCompany extends BaseAdapter implements Filterable {
 
     private ArrayList<Business> businesses;
     private ArrayList<Business> mStringFilterList;
@@ -35,7 +35,7 @@ public class AdapterListBusiness extends BaseAdapter implements Filterable {
     private Context context;
     private DatabaseReference keyWord;
 
-    public AdapterListBusiness(Context context, ArrayList<Business> businesses) {
+    public AdapterSearchCompany(Context context, ArrayList<Business> businesses) {
         this.context = context;
         this.businesses = businesses;
         mStringFilterList = businesses;
