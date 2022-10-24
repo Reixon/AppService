@@ -118,7 +118,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                             assert bundle != null;
                             Service serviceResult = (Service) bundle.get("Service");
                             adapterService.addService(serviceResult);
-                            adapterService.notifyItemChanged(adapterService.getItemCount());
+                            adapterService.notifyDataSetChanged();
                         }
                     } catch (Exception e) {
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
@@ -142,6 +142,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                 .document(business.getId())
                 .collection("Schedules")
                 .whereEqualTo("day", days[dayOfWeek])
+                .whereEqualTo("opened", true)
                 .get();
         schedulesRef.addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
@@ -325,9 +326,13 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         String bM = Integer.toString(beforeMinute);
         if (beforeHour == 0) {
             bH = "00";
+        } else if(beforeHour > 0 && beforeHour < 10){
+            bH = "0"+bH;
         }
         if (beforeMinute == 0) {
             bM = "00";
+        } else if(beforeMinute > 0 && beforeHour < 10) {
+            bM = "0"+bM;
         }
         int minutes = 0;
         int hours = beforeHour;
@@ -523,9 +528,12 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                             String[] date = booking.getTime().split(" at")[0].split(" - ");
                             int forPosition = schedulesBooking.indexOf(date[0]);
                             int ultPosition = schedulesBooking.indexOf(date[1]);
+                            ArrayList copy = schedulesBooking;
+
                             for (int i = forPosition; i <= ultPosition; i++) {
-                                schedulesBooking.remove(forPosition);
+                                copy.remove(forPosition);
                             }
+                            schedulesBooking = copy;
                         }
                     }
                     loadScheduleInterface();
@@ -534,7 +542,6 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
 
 
     private void initialListeners() {
-        listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(adapterService);
 

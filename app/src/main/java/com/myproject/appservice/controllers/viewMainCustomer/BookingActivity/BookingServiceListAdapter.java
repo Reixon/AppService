@@ -69,10 +69,10 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView txt_nameBusiness;
-        private TextView txtCost;
-        private TextView txtTime;
-        private FloatingActionButton deleteService;
+        private final TextView txt_nameBusiness;
+        private final TextView txtCost;
+        private final TextView txtTime;
+        private final FloatingActionButton deleteService;
         private BookingServiceListAdapter adapter;
 
         public ViewHolder(@NonNull View convertView) {
@@ -85,7 +85,8 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
 
             deleteService.setOnClickListener(v ->{
                 adapter.services.remove(getAbsoluteAdapterPosition());
-                adapter.notifyItemChanged(getAbsoluteAdapterPosition());
+                deleteService.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
             });
         }
 
