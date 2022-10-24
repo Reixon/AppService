@@ -270,6 +270,10 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                     int afterHour = Integer.parseInt(range[1].split(":")[0]);
                     float timeBefore = Float.parseFloat(range[0].split(":")[0]) +
                             (float) afterMinute / 60.0f;
+                    while(hour > timeBefore){
+                        timeBefore+=0.25;
+                    }
+                    beforeHour = Math.round(timeBefore);
                     float timeAfter = Float.parseFloat(range[1].split(":")[0]) +
                             Float.parseFloat(range[1].split(":")[1]) / 60.0f;
                     if (hour <= timeBefore && hour < timeAfter) {
