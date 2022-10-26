@@ -3,13 +3,16 @@ package com.myproject.appservice.controllers.login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -47,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
 
         bt_login.setOnClickListener(view -> {
             showProgress(true);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            EditText focused = txtEmail.isFocused() ? txtEmail : txtPassword;
+            imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
             checkUser();
         });
         bt_register.setOnClickListener(view -> createAccount());
@@ -97,9 +103,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.msg_password_isRequired, Toast.LENGTH_LONG).show();
             return ;
         }
-
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
-
             if (task.isSuccessful()) {
                 loginUser();
             } else {
@@ -107,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, R.string.msg_error_authentication,
                         Toast.LENGTH_SHORT).show();
             }
-
         });
 
     }
@@ -132,8 +135,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             finish();
             showProgress(false);
-            Toast.makeText(LoginActivity.this, "Bienvenido ",
-                    Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(LoginActivity.this, "Bienvenido ",  Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(e -> {
             showProgress(false);
             Toast.makeText(LoginActivity.this, "Authentication failed.",
@@ -143,6 +145,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        LinearLayout relativeLayout = findViewById(R.id.generalLayout);
+        relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        relativeLayout.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                relativeLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mProgressView.animate().setDuration(shortAnimTime).alpha(
                 show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
