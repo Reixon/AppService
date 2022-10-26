@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -78,7 +80,6 @@ public class SearchCompanyActivity extends AppCompatActivity {
     private final int ERROR_DIALOG_REQUEST = 901;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private boolean isPermissionGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,85 +96,26 @@ public class SearchCompanyActivity extends AppCompatActivity {
         list.setAdapter(adapterListBusiness);
 
         showProgress(true);
-
+        locationRequest = LocationRequest.create()
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setInterval(5000)
+                .setFastestInterval(2000);
 
         // Initialize db reference
         db = FirebaseFirestore.getInstance();
         geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference().child("geoFire"));
         initializeListeners();
 
-        if (!isPermissionGranted) {
-            if (isGPSEnable()) {
-                requestPermissionsLocalization();
-            }
-        }
+
+        requestPermissions();
 
     }
 
-    private boolean isGPSEnable() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Log.i(TAG, "enableGPS: mLocationPermissionGranted " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            return true;
-        } else {
-            locationRequest = LocationRequest.create()
-                    .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(10000)
-                    .setFastestInterval(10000 / 2);
-
-//            AlertDialog alertDialog = new AlertDialog.Builder(this)
-//                    .setTitle("GPS Permission")
-//                    .setMessage("GPS is required for this app to work. Please enable GPS")
-//                    .setPositiveButton("Yes", ((dialogInterface, i)-> {
-//
-//                    }));
-            LocationSettingsRequest.Builder locationBuilder = new LocationSettingsRequest.Builder();
-
-            locationBuilder.addLocationRequest(locationRequest);
-            locationBuilder.setAlwaysShow(true);
-
-            SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-            Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(locationBuilder.build());
-            task.addOnSuccessListener(v -> {
-                if (isPermissionGranted) {
-                    Log.i(TAG, "enableGPS: mLocationPermissionGranted " + true);
-                    getLocation();
-                }
-            });
-            task.addOnFailureListener(v -> {
-                if (v instanceof ResolvableApiException) {
-                    Log.i(TAG, "enableGPS: " + false);
-                    ResolvableApiException resolvableApiException = (ResolvableApiException) v;
-                    try {
-                        resolvableApiException.startResolutionForResult(SearchCompanyActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-        return false;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "onActivityResult: ");
-
-        if (requestCode == REQUEST_CHECK_SETTINGS) {
-                Log.i(TAG, "GPS_PROVIDER ON");
-                requestPermissionsLocalization();
-        }
-    }
-
-    private void requestPermissionsLocalization() {
-        locationRequest = LocationRequest.create()
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10000)
-                .setFastestInterval(10000 / 2);
-        Log.i(TAG, "PermissionsLocalization IN");
+    private void requestPermissions() {
+        Log.i(TAG, "----requestPermissions --- ");
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "checkSelfPermission NO GRANTED ");
             if ((shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))) {
                 String title = getResources().getString(R.string.title_use_location);
                 String message = getResources().getString(R.string.explication_permissions);
@@ -183,8 +125,82 @@ public class SearchCompanyActivity extends AppCompatActivity {
                         {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS);
             }
         } else {
-            Log.i(TAG, "checkSelfPermission GRANTED");
+            Log.i(TAG, "checkSelfPermission  GRANTED");
+            if (isGPSEnable()) {
+                getLocation();
+            } else {
+                Log.i(TAG, "turnOnGPS ");
+                turnOnGPS();
+            }
+        }
+    }
+
+    private boolean isGPSEnable() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.i(TAG, "isGPSEnable ON");
+            return true;
+        }
+        Log.i(TAG, "isGPSEnable off");
+        return false;
+    }
+
+    private void turnOnGPS(){
+        Log.i(TAG, "turnOnGPS ");
+        LocationSettingsRequest.Builder locationBuilder = new LocationSettingsRequest.Builder();
+
+        locationBuilder.addLocationRequest(locationRequest);
+        locationBuilder.setAlwaysShow(true);
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(locationBuilder.build());
+        task.addOnSuccessListener(v -> {
+            Log.i(TAG, "turnOnGPS on ");
             getLocation();
+
+        });
+        task.addOnFailureListener(v -> {
+            if (v instanceof ResolvableApiException) {
+                Log.i(TAG, "turnOnGPS: question");
+                ResolvableApiException resolvableApiException = (ResolvableApiException) v;
+                try {
+                    resolvableApiException.startResolutionForResult(SearchCompanyActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLocation() {
+        LocationServices.getFusedLocationProviderClient(
+                SearchCompanyActivity.this).requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                LocationServices.getFusedLocationProviderClient(SearchCompanyActivity.this)
+                        .removeLocationUpdates(this);
+                Log.i(TAG, "Location current");
+                if (locationResult.getLocations().size() > 0) {
+                    Location location = locationResult.getLocations().get(locationResult.getLocations().size() - 1);
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    getGeoLocation(latitude, longitude);
+                }
+            }
+        }, Looper.getMainLooper());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CHECK_SETTINGS && resultCode == -1) {
+            Log.i(TAG, "RESPONSE YES");;
+            requestPermissions();
+        } else if(requestCode == REQUEST_CHECK_SETTINGS && resultCode == 0) {
+            showProgress(false);
+            finish();
         }
     }
 
@@ -204,81 +220,20 @@ public class SearchCompanyActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionsResult");
+        Log.i(TAG, "onRequestPermissionsResult 6");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "RequestPermissionsResult TRUE");
+                Log.i(TAG, "RequestPermissionsResult TRUE 7");
+                getLocation();
             }
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private void getLocation() {
-        Log.i(TAG, "IN LOCATION");
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    showProgress(false);
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-                        Log.i(TAG, "LOCATION REMOVE");
-                    }
-                }
-
-            }
-        };
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(SearchCompanyActivity.this);
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
-            Location location = task.getResult();
-            Log.i(TAG, "LOCATION GEOLOCATION " + location);
-            if (location != null) {
-                Log.i(TAG, "LOCATION true");
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                getGeoLocation(latitude, longitude);
-            }
-        });
-        Log.i(TAG, "END LOCATION");
-    }
-
-
-//    private void enableGPS(LocationRequest locationRequest) {
-//        LocationSettingsRequest.Builder locationBuilder = new LocationSettingsRequest.Builder();
-//
-//        locationBuilder.addLocationRequest(locationRequest);
-//        locationBuilder.setAlwaysShow(true);
-//
-//        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-//        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(locationBuilder.build());
-//        task.addOnSuccessListener(v ->{
-//            if(mLocationPermissionGranted){
-//                Log.i(TAG, "enableGPS: mLocationPermissionGranted "+ true);
-//                getLocation();
-//            }
-//        });
-//        task.addOnFailureListener(v -> {
-//            if (v instanceof ResolvableApiException) {
-//                Log.i(TAG, "enableGPS: "+ false);
-//                ResolvableApiException resolvableApiException = (ResolvableApiException) v;
-//                try {
-//                    resolvableApiException.startResolutionForResult(SearchCompanyActivity.this, REQUEST_CHECK_SETTINGS);
-//                } catch (IntentSender.SendIntentException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//    }
 
     private void getGeoLocation(double latitude, double longitude) {
+        Log.i(TAG, "entered  - Geo 10 " + latitude + ", " + longitude);
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(
                 latitude, longitude), radius);
 
