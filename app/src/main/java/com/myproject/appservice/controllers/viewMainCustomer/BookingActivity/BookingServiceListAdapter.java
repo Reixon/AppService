@@ -1,5 +1,6 @@
 package com.myproject.appservice.controllers.viewMainCustomer.BookingActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -63,8 +64,10 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
         return position;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void addService(Service service) {
         services.add(service);
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -86,7 +89,7 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
             deleteService.setOnClickListener(v ->{
                 adapter.services.remove(getAbsoluteAdapterPosition());
                 deleteService.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+                adapter.notifyItemRemoved(getAbsoluteAdapterPosition());
             });
         }
 
