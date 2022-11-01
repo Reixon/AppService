@@ -434,7 +434,6 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
             }
             // Los 15min extra de lastMinuteSchedule es porque no se muestran los últimos 15min del horario
             if (scheduleOut) {
-                btDoBooking.setEnabled(false);
                 Dialog dialog = new Dialog(this);
                 dialog.setContentView(R.layout.dialog_notice_schedule_out);
                 Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(AppCompatResources.getDrawable(getBaseContext(),R.drawable.border_button));
