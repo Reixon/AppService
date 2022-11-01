@@ -24,14 +24,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.myproject.appservice.Common;
-import com.myproject.appservice.controllers.viewMainCustomer.ServiceSearchActivity.ServiceSearchActivity;
+import com.myproject.appservice.controllers.viewMainCustomer.SearchCompany.SearchCompanyActivity;
 import com.myproject.appservice.databinding.ActivityConsultBusinessViewBinding;
 import com.myproject.appservice.models.Business;
 import com.myproject.appservice.models.Service;
 
 import java.util.ArrayList;
 
-public class ConsultBusinessView extends AppCompatActivity {
+public class ConsultBusinessActivity extends AppCompatActivity {
 
     private  ActivityConsultBusinessViewBinding binding;
     private Business business;
@@ -79,7 +79,7 @@ public class ConsultBusinessView extends AppCompatActivity {
         ImageButton back = binding.backArrow;
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(this));
-        BusinessServiceListAdapter adapter = new BusinessServiceListAdapter(this, business, services);
+        AdapterConsultBusiness adapter = new AdapterConsultBusiness(this, business, services);
         listView.setAdapter(adapter);
         nameBusiness.setText(business.getNameBusiness());
         txt_address.setText(business.getAddress());
@@ -101,20 +101,17 @@ public class ConsultBusinessView extends AppCompatActivity {
         });
 
         back.setOnClickListener(v -> {
-            Intent intent = new Intent(ConsultBusinessView.this, ServiceSearchActivity.class);
+            Intent intent = new Intent(ConsultBusinessActivity.this, SearchCompanyActivity.class);
             startActivity(intent
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
             finish();
         });
 
-        textSearchService.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if((keyCode == KeyEvent.KEYCODE_ENTER)&& event.getAction()== KeyEvent.ACTION_DOWN){
-                    adapter.getFilter().filter(textSearchService.getText());
-                }
-                return false;
+        textSearchService.setOnKeyListener((v, keyCode, event) -> {
+            if((keyCode == KeyEvent.KEYCODE_ENTER)&& event.getAction()== KeyEvent.ACTION_DOWN){
+                adapter.getFilter().filter(textSearchService.getText());
             }
+            return false;
         });
     }
 

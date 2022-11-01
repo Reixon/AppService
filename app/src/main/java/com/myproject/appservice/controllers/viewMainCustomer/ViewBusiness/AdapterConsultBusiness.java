@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class BusinessServiceListAdapter extends RecyclerView.Adapter<BusinessServiceListAdapter.ViewHolder> implements Filterable {
+public class AdapterConsultBusiness extends RecyclerView.Adapter<AdapterConsultBusiness.ViewHolder> implements Filterable {
 
     private ArrayList<Service> services;
     private final ArrayList<Service> mStringFilterList;
@@ -38,7 +38,7 @@ public class BusinessServiceListAdapter extends RecyclerView.Adapter<BusinessSer
     private final Context context;
     private Business business;
 
-    public BusinessServiceListAdapter(Context context, Business business, ArrayList<Service> services) {
+    public AdapterConsultBusiness(Context context, Business business, ArrayList<Service> services) {
         this.context = context;
         this.services = services;
         this.business = business;
@@ -63,14 +63,14 @@ public class BusinessServiceListAdapter extends RecyclerView.Adapter<BusinessSer
 
     @NonNull
     @Override
-    public BusinessServiceListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterConsultBusiness.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view  = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_item_service_businessview, parent,false);
-        return new BusinessServiceListAdapter.ViewHolder(view);
+        return new AdapterConsultBusiness.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BusinessServiceListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterConsultBusiness.ViewHolder holder, int position) {
         holder.txt_nameBusiness.setText(services.get(position).getName());
         holder.btBooking.setTag(position);
         float price = services.get(position).getPrice();
@@ -79,15 +79,12 @@ public class BusinessServiceListAdapter extends RecyclerView.Adapter<BusinessSer
         holder.txtTime.setText(services.get(position).getTime());
         holder.txt_nameBusiness.setTextColor(Color.BLACK);
 
-        holder.btBooking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = (int) v.getTag();
-                Intent intent = new Intent(context, BookingServiceActivity.class);
-                intent.putExtra("Service", services.get(position));
-                intent.putExtra("Business", business);
-                context.startActivity(intent);
-            }
+        holder.btBooking.setOnClickListener(v -> {
+            int position1 = (int) v.getTag();
+            Intent intent = new Intent(context, BookingServiceActivity.class);
+            intent.putExtra("Service", services.get(position1));
+            intent.putExtra("Business", business);
+            context.startActivity(intent);
         });
     }
 
