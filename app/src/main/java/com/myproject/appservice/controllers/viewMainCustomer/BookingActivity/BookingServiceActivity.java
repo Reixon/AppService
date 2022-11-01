@@ -211,11 +211,11 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Log.d(TAG, document.getId() + " => " + document.getData());
                         schedulesBooking = new ArrayList<>();
-                        Schedule schedules = document.toObject(Schedule.class);
+                        schedules = document.toObject(Schedule.class);
                         ArrayList<String> divideSchedule = validateRangeHours(schedules.getSchedulesDay());
                         if (schedules.getSchedulesDay() != null && divideSchedule.size() > 0) {
                             decomposeSchedule(divideSchedule);
-                        } else {
+                         } else {
                             loadScheduleInterfaceNoAvailable();
                         }
                     }
@@ -326,7 +326,12 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         for (int x = 1; x < res; x++) {
             if (minutes == 45) {
                 hours += 1;
-                bH = hours + "";
+                if(hours > 0 && hours < 10){
+                    bH = "0"+hours;
+                } else {
+                    bH = hours + "";
+                }
+
                 bM = "00";
                 minutes = 0;
             } else {
@@ -390,7 +395,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
             button.setLayoutParams(params);
             button.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(idLastButtonChecked!= buttonView.getId()) {
-                    clickSchedule(isChecked, buttonView);
+                    clickSchedule(isChecked, (ToggleButton) buttonView);
                 }
             });
             linearLayout.addView(button);
@@ -407,9 +412,9 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         }
     }
 
-    private void clickSchedule(boolean isChecked, Button buttonView) {
+    private void clickSchedule(boolean isChecked, ToggleButton buttonView) {
         if (isChecked) {
-            idLastButtonChecked = buttonView.getId();
+
             int position = buttonView.getId();
             Common.slotSchedule = position;
 
@@ -439,8 +444,10 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                 Button button = dialog.findViewById(R.id.bt_schedule_out);
                 button.setOnClickListener(v -> dialog.dismiss());
                 dialog.show();
+                buttonView.setChecked(false);
 
             } else {
+                idLastButtonChecked = buttonView.getId();
                 calculatedSchedule(minuteCheckedSchedule, hourCheckedSchedule, buttonView, position);
             }
         } else {
@@ -542,6 +549,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            idLastButtonChecked = -1;
             loadSchedule();
             Log.i("LOG", "dia " + dayOfMonth + " mes " + month + " año " + year +
                     " calendar AÑO " + calendar.get(Calendar.YEAR) + " MES " + calendar.get(Calendar.MONTH) + " dia " + calendar.get(Calendar.DAY_OF_MONTH));
