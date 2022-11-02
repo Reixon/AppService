@@ -1,15 +1,18 @@
 package com.myproject.appservice.controllers.registerBusinessActivity.StepsRegisterBusiness;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -18,8 +21,7 @@ import com.myproject.appservice.Common;
 import com.myproject.appservice.R;
 import com.myproject.appservice.databinding.FragmentStepOneBinding;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
 
 public class RegisterBusinessStepOneFragment extends Fragment {
@@ -29,8 +31,7 @@ public class RegisterBusinessStepOneFragment extends Fragment {
     private Button btContinue;
     private LocalBroadcastManager localBroadcastManager;
     private boolean cancelName, cancelEmail, cancelPassword;
-
-    private FragmentStepOneBinding binding;
+    @SuppressLint("StaticFieldLeak")
     private static RegisterBusinessStepOneFragment instance;
 
     public static RegisterBusinessStepOneFragment getInstance(){
@@ -48,10 +49,10 @@ public class RegisterBusinessStepOneFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        binding = FragmentStepOneBinding.inflate(inflater, container, false);
+        com.myproject.appservice.databinding.FragmentStepOneBinding binding = FragmentStepOneBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         cancelName = true;
         cancelEmail = true;
@@ -114,12 +115,7 @@ public class RegisterBusinessStepOneFragment extends Fragment {
             }
         });
 
-        btContinue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkFields();
-            }
-        });
+        btContinue.setOnClickListener(v -> checkFields());
         return view;
     }
 
@@ -137,13 +133,13 @@ public class RegisterBusinessStepOneFragment extends Fragment {
         txtPassword.setError(null);
 
         // Store values at the time of the login attempt.
-        String name = txtNameOwner.getText().toString();
-        String email = txtEmail.getText().toString();
-        String password = txtPassword.getText().toString();
+        String name = Objects.requireNonNull(txtNameOwner.getText()).toString();
+        String email = Objects.requireNonNull(txtEmail.getText()).toString();
+        String password = Objects.requireNonNull(txtPassword.getText()).toString();
 
         boolean cancel = false;
 
-        if (!isNameValid(name)) {
+        if (!Common.isNameValid(name)) {
             txtNameOwner.setError(getString(R.string.msg_name_isRequired));
             cancel = true;
         }
@@ -151,7 +147,7 @@ public class RegisterBusinessStepOneFragment extends Fragment {
         if (TextUtils.isEmpty(password)) {
             txtPassword.setError(getString(R.string.msg_password_isRequired));
             cancel = true;
-        } else if(!isPasswordValid(password)) {
+        } else if(!Common.isPasswordValid(password)) {
             txtPassword.setError(getString(R.string.msg_error_invalid_password));
             cancel = true;
         }
@@ -160,7 +156,7 @@ public class RegisterBusinessStepOneFragment extends Fragment {
         if (TextUtils.isEmpty(email)) {
             txtEmail.setError(getString(R.string.msg_email_isRequired));
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!Common.isEmailValid(email)) {
             txtEmail.setError(getString(R.string.msg_error_invalid_email));
             cancel = true;
         }
@@ -171,31 +167,12 @@ public class RegisterBusinessStepOneFragment extends Fragment {
     }
 
     private void nextStep(){
+        Log.i(TAG, "SECOND STEP");
         Intent intent = new Intent(Common.ENABLE_BUTTON_NEXT);
         intent.putExtra(Common.KEY_STEP, 0);
-        intent.putExtra("NAME", txtNameOwner.getText().toString());
-        intent.putExtra("EMAIL", txtEmail.getText().toString());
-        intent.putExtra("PASSWORD", txtPassword.getText().toString());
+        intent.putExtra("NAME", Objects.requireNonNull(txtNameOwner.getText()).toString());
+        intent.putExtra("EMAIL", Objects.requireNonNull(txtEmail.getText()).toString());
+        intent.putExtra("PASSWORD", Objects.requireNonNull(txtPassword.getText()).toString());
         localBroadcastManager.sendBroadcast(intent);
     }
-
-    private boolean isEmailValid(String email) {
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
-
-    private boolean isNameValid(String name) {
-        return name.length() >= 4;
-    }
-
-    private boolean isPasswordValid(String password) {
-        String expression = "^[\\w\\.-]{6,20}$";
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
-    }
-
-
 }
