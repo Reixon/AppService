@@ -127,16 +127,19 @@ public class AdapterScheduleHours extends RecyclerView.Adapter<AdapterScheduleHo
             final int positionActionBtn = (int) v.getTag();
             if(positionActionBtn == 0){
                 if (scheduleList.get(weekPosition).isOpened()) {
+                    int positionSchedule = 0;
                     if (scheduleList.get(weekPosition).getSchedulesDay().size() == 1) {
                         scheduleList.get(weekPosition).getSchedulesDay().add(context.getResources().getString(R.string.afternoonSchedule));
-                        notifyItemInserted(1);
+                        positionSchedule = 1;
                     } else if (scheduleList.get(weekPosition).getSchedulesDay().size() == 2) {
                         scheduleList.get(weekPosition).getSchedulesDay().add(context.getResources().getString(R.string.eveningSchedule));
                         notifyItemInserted(2);
+                        positionSchedule = 2;
                     } else if (scheduleList.get(weekPosition).getSchedulesDay().size() == 3) {
                         scheduleList.get(weekPosition).getSchedulesDay().add(context.getResources().getString(R.string.nightSchedule));
-                        notifyItemInserted(3);
+                        positionSchedule = 3;
                     }
+                    notifyItemInserted(positionSchedule);
                     if (adapterListSchedule.getAddSchedule(weekPosition) && scheduleList.get(weekPosition).getSchedulesDay().size() < 4) {
                         holder.actionBtn.setVisibility(View.VISIBLE);
                     } else {
