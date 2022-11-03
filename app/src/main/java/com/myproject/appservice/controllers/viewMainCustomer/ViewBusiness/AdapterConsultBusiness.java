@@ -20,8 +20,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.myproject.appservice.Common;
 import com.myproject.appservice.R;
 import com.myproject.appservice.controllers.viewMainCustomer.BookingActivity.BookingServiceActivity;
+import com.myproject.appservice.models.Booking;
 import com.myproject.appservice.models.Business;
 import com.myproject.appservice.models.Service;
 
@@ -73,7 +75,7 @@ public class AdapterConsultBusiness extends RecyclerView.Adapter<AdapterConsultB
     public void onBindViewHolder(@NonNull AdapterConsultBusiness.ViewHolder holder, int position) {
         holder.txt_nameBusiness.setText(services.get(position).getName());
         holder.btBooking.setTag(position);
-        float price = services.get(position).getPrice();
+        double price = services.get(position).getPrice();
         String txtPrice = price + "€";
         holder.txtCost.setText(txtPrice);
         holder.txtTime.setText(services.get(position).getTime());
@@ -82,18 +84,28 @@ public class AdapterConsultBusiness extends RecyclerView.Adapter<AdapterConsultB
         holder.btBooking.setOnClickListener(v -> {
             int position1 = (int) v.getTag();
             Intent intent = new Intent(context, BookingServiceActivity.class);
-            intent.putExtra("Service", services.get(position1));
-            intent.putExtra("Business", business);
+        //    intent.putExtra("Service", services.get(position1));
+            Booking booking = new Booking();
+            booking.setBusiness(business.getNameBusiness());
+            booking.setIdBusiness(business.getId());
+            booking.setLatitude(business.getLatitude());
+            booking.setLongitude(business.getLongitude());
+            booking.getServices().add(services.get(position1));
+            booking.setCustomer(Common.nameUser);
+            booking.setIdEmployee(business.getIdUser());
+            booking.setEmailCustomer(Common.emailUser);
+            intent.putExtra("Booking", booking);
+        //    intent.putExtra("Business", business);
             context.startActivity(intent);
         });
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView txt_nameBusiness;
-        private TextView txtCost;
-        private TextView txtTime;
-        private Button btBooking;
+        private final TextView txt_nameBusiness;
+        private final TextView txtCost;
+        private final TextView txtTime;
+        private final Button btBooking;
 
         public ViewHolder(@NonNull View convertView) {
             super(convertView);

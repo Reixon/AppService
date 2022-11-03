@@ -41,7 +41,7 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
     @Override
     public void onBindViewHolder(@NonNull BookingServiceListAdapter.ViewHolder holder, int position) {
         holder.txt_nameBusiness.setText(services.get(position).getName());
-        float price = services.get(position).getPrice();
+        double price = services.get(position).getPrice();
         String txtPrice = price + "€";
         holder.txtCost.setText(txtPrice);
         holder.txt_nameBusiness.setTextColor(Color.BLACK);

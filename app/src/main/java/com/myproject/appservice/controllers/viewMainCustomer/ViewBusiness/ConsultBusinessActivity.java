@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.myproject.appservice.Common;
 import com.myproject.appservice.controllers.viewMainCustomer.SearchCompany.SearchCompanyActivity;
 import com.myproject.appservice.databinding.ActivityConsultBusinessViewBinding;
 import com.myproject.appservice.models.Business;
@@ -48,7 +47,6 @@ public class ConsultBusinessActivity extends AppCompatActivity {
         mProgressView = binding.progressCircular;
         business = (Business) getIntent().getSerializableExtra("Business");
         assert business != null;
-        Common.idEmployee = business.getIdUser();
         CollectionReference serviceRef = FirebaseFirestore.getInstance().
                 collection("Businesses")
                 .document(business.getId())
