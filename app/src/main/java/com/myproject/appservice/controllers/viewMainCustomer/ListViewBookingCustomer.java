@@ -3,11 +3,9 @@ package com.myproject.appservice.controllers.viewMainCustomer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +25,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.myproject.appservice.Common;
 import com.myproject.appservice.R;
-import com.myproject.appservice.controllers.viewMainCustomer.ConsultBookingDetail.ConsultBookingDetail;
+import com.myproject.appservice.controllers.viewMainCustomer.ConsultBookingDetail.ConsultBooking;
 import com.myproject.appservice.databinding.FragmentListViewBookingCustomerBinding;
 import com.myproject.appservice.models.Booking;
 import com.myproject.appservice.models.Service;
@@ -37,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ListViewBookingCustomer extends Fragment{
+public class ListViewBookingCustomer extends Fragment {
 
     private ArrayList<Booking> bookings;
     private RecyclerView listBooking;
@@ -54,27 +52,24 @@ public class ListViewBookingCustomer extends Fragment{
         showProgress(true);
 
         FirebaseFirestore.getInstance().collection("Users")
-        .document(Common.idUser).collection("Booking")
-        .whereEqualTo("done", true)
-        .orderBy("timestamp", Query.Direction.ASCENDING).get()
-            .addOnCompleteListener(task -> {
-                if(task.isSuccessful()){
-                    if(!task.getResult().isEmpty()){
-                        bookings = new ArrayList<>();
-                        for (QueryDocumentSnapshot queryDocumentSnapshot: task.getResult()){
-                            Booking booking = queryDocumentSnapshot.toObject(Booking.class);
-                            bookings.add(booking);
+                .document(Common.idUser).collection("Booking")
+                .limit(10)
+                .orderBy("timestamp", Query.Direction.DESCENDING).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            bookings = new ArrayList<>();
+                            for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                                Booking booking = queryDocumentSnapshot.toObject(Booking.class);
+                                bookings.add(booking);
+                            }
+                            AdapterListViewBooking adapter = new AdapterListViewBooking(getContext(), bookings);
+                            listBooking.setAdapter(adapter);
+                            //adapter.notifyDataSetChanged();
                         }
-                        AdapterListViewBooking adapter = new AdapterListViewBooking(getContext(), bookings);
-                        listBooking.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
                         showProgress(false);
                     }
-                }
-            }).addOnFailureListener(e -> {
-                showProgress(false);
-
-            });
+                }).addOnFailureListener(e -> showProgress(false));
     }
 
     @Override
@@ -96,7 +91,6 @@ public class ListViewBookingCustomer extends Fragment{
         return binding.getRoot();
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         LinearLayout linearLayout = binding.layout;
@@ -118,7 +112,7 @@ public class ListViewBookingCustomer extends Fragment{
         });
     }
 
-    public static class AdapterListViewBooking extends RecyclerView.Adapter<AdapterListViewBooking.ViewHolder>{
+    public static class AdapterListViewBooking extends RecyclerView.Adapter<AdapterListViewBooking.ViewHolder> {
 
         private final ArrayList<Booking> bookings;
         private final Context context;
@@ -131,16 +125,16 @@ public class ListViewBookingCustomer extends Fragment{
         @NonNull
         @Override
         public AdapterListViewBooking.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view  = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.adapter_item_booking_customer, parent,false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter_item_booking_customer, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull AdapterListViewBooking.ViewHolder holder, int position) {
             StringBuilder services = new StringBuilder();
-            for (int i = 0; i< bookings.get(position).getServices().size(); i++){
-                if(i>0){
+            for (int i = 0; i < bookings.get(position).getServices().size(); i++) {
+                if (i > 0) {
                     services.append(",");
                 }
                 services.append(bookings.get(position).getServices().get(i).getName());
@@ -150,7 +144,7 @@ public class ListViewBookingCustomer extends Fragment{
             holder.txtAddress.setText(bookings.get(position).getAddress());
             StringBuilder serviceInfo = new StringBuilder();
             Booking booking = bookings.get(position);
-            for(Service service : booking.getServices()){
+            for (Service service : booking.getServices()) {
                 serviceInfo.append(service.getName()).append(" ");
             }
             holder.txtService.setText(serviceInfo);
@@ -167,7 +161,7 @@ public class ListViewBookingCustomer extends Fragment{
             holder.btBooking.setTag(position);
             holder.cardView.setTag(position);
             Calendar today = Calendar.getInstance();
-            if(calendar.getTime().getTime() > today.getTime().getTime()){
+            if (calendar.getTime().getTime() < today.getTime().getTime()) {
                 holder.btBooking.setVisibility(View.VISIBLE);
             } else {
                 holder.btBooking.setVisibility(View.GONE);
@@ -177,9 +171,8 @@ public class ListViewBookingCustomer extends Fragment{
             });
             holder.cardView.setOnClickListener(v -> {
                 int position1 = (int) v.getTag();
-                Intent intent = new Intent(context, ConsultBookingDetail.class);
+                Intent intent = new Intent(context, ConsultBooking.class);
                 intent.putExtra("Booking", bookings.get(position1).getId());
-                intent.putExtra("Business", bookings.get(position1).getIdBusiness());
                 context.startActivity(intent);
             });
 

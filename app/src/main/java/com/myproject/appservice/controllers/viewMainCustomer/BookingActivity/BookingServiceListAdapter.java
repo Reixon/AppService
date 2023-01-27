@@ -1,5 +1,6 @@
 package com.myproject.appservice.controllers.viewMainCustomer.BookingActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
     @Override
     public void onBindViewHolder(@NonNull BookingServiceListAdapter.ViewHolder holder, int position) {
         holder.txt_nameBusiness.setText(services.get(position).getName());
-        float price = services.get(position).getPrice();
+        double price = services.get(position).getPrice();
         String txtPrice = price + "€";
         holder.txtCost.setText(txtPrice);
         holder.txt_nameBusiness.setTextColor(Color.BLACK);
@@ -63,8 +64,10 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
         return position;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void addService(Service service) {
         services.add(service);
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -86,7 +89,7 @@ public class BookingServiceListAdapter extends RecyclerView.Adapter<BookingServi
             deleteService.setOnClickListener(v ->{
                 adapter.services.remove(getAbsoluteAdapterPosition());
                 deleteService.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+                adapter.notifyItemRemoved(getAbsoluteAdapterPosition());
             });
         }
 

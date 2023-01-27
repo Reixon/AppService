@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.myproject.appservice.R;
 import com.myproject.appservice.models.Service;
 
@@ -37,10 +38,11 @@ public class AdapterConsultBooking extends RecyclerView.Adapter<AdapterConsultBo
     @Override
     public void onBindViewHolder(@NonNull AdapterConsultBooking.ViewHolder holder, int position) {
         holder.txtService.setText(services.get(position).getName());
-        float price = services.get(position).getPrice();
+        double price = services.get(position).getPrice();
         String txtPrice = price + "€";
         holder.txtCost.setText(txtPrice);
         holder.txtTime.setText(services.get(position).getTime());
+
     }
 
     @Override
@@ -48,15 +50,25 @@ public class AdapterConsultBooking extends RecyclerView.Adapter<AdapterConsultBo
         return this.services.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public void addService(Service serviceResult) {
+        services.add(serviceResult);
+        notifyItemInserted(services.size()-1);
+    }
 
-        private TextView txtService, txtCost, txtTime;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView txtService;
+        private final TextView txtCost;
+        private final TextView txtTime;
+        private FloatingActionButton addFloatingButton;
 
         public ViewHolder(@NonNull View convertView) {
             super(convertView);
             txtService = convertView.findViewById(R.id.txt_name_service);
             txtCost = convertView.findViewById(R.id.txtCost);
             txtTime = convertView.findViewById(R.id.time);
+            addFloatingButton = convertView.findViewById(R.id.addFloatingButton);
+            addFloatingButton.setVisibility(View.GONE);
             convertView.setBackgroundColor(Color.WHITE);
         }
     }

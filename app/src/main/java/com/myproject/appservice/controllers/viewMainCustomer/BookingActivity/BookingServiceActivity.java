@@ -2,9 +2,9 @@ package com.myproject.appservice.controllers.viewMainCustomer.BookingActivity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,15 +21,13 @@ import android.widget.ToggleButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
@@ -45,7 +43,6 @@ import com.myproject.appservice.controllers.viewMainCustomer.ViewBusiness.Consul
 import com.myproject.appservice.controllers.viewMainCustomer.ViewMainCustomer;
 import com.myproject.appservice.databinding.ActivityConsultServiceViewBinding;
 import com.myproject.appservice.models.Booking;
-import com.myproject.appservice.models.Business;
 import com.myproject.appservice.models.Schedule;
 import com.myproject.appservice.models.Service;
 
@@ -54,7 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -63,13 +60,14 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
     private static final String TAG = "BOOKING_SERVICE_ACTIVITY";
     private ActivityConsultServiceViewBinding binding;
     private Calendar calendar;
-    private List<Date> dates = new ArrayList<>();
-    private Business business;
     private String nameBusiness;
+    private Schedule schedules;
+    private Booking booking;
+    private ArrayList<Service> services;
     private ArrayList<String> schedulesBooking;
     private BookingServiceListAdapter adapterService;
     private ArrayList<ToggleButton> btScheduleList;
-    private ArrayList<Service> services;
+    private int idLastButtonChecked;
 
     private ImageButton backArrow;
     private CalendarView calendarView;
@@ -86,9 +84,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         super.onCreate(savedInstanceState);
         binding = ActivityConsultServiceViewBinding.inflate(getLayoutInflater());
         backArrow = binding.backArrow;
-        TextView title = binding.title;
         calendarView = binding.viewPagerGrid;
-        HorizontalScrollView horizontalScrollView = binding.horizontalScroll;
         listView = binding.listServices;
         btAddService = binding.btAddService;
         textAddService = binding.addServiceTxt;
@@ -97,14 +93,18 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
 
         View view = binding.getRoot();
         setContentView(view);
-        business = (Business) Objects.requireNonNull(getIntent().getExtras()).get("Business");
-        Service service = (Service) getIntent().getExtras().get("Service");
-        nameBusiness = business.getNameBusiness();
-        services = new ArrayList<>();
-        services.add(service);
-        adapterService = new BookingServiceListAdapter(this, business.getId(), services);
-        calendar = Calendar.getInstance( TimeZone.getTimeZone("GMT+02:00"));
+        booking = (Booking) Objects.requireNonNull(getIntent().getExtras()).get("Booking");
+        assert booking != null;
+        if(booking.getId()!=null){
+            btDoBooking.setText(getResources().getString(R.string.txt_do_booking));
+        }
+        nameBusiness = booking.getBusiness();
+        services = booking.getServices();
+
+        adapterService = new BookingServiceListAdapter(this, booking.getIdBusiness(), services);
+        calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+01:00"));
         System.out.println(calendar);
+        idLastButtonChecked = -1;
 
         showProgress(true);
         initialDataSchedule();
@@ -118,28 +118,21 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                             assert bundle != null;
                             Service serviceResult = (Service) bundle.get("Service");
                             adapterService.addService(serviceResult);
-                            adapterService.notifyDataSetChanged();
                         }
                     } catch (Exception e) {
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
                                 .show();
                     }
                 });
+        showProgress(false);
     }
-
-    /*
-    private boolean checkCurrentHourHasService(ArrayList<String> schedulesDay){
-        String[] range = schedulesDay.get(schedulesDay.size()-1).split(" - ");
-        int afterHour = Integer.parseInt(range[1].split(":")[0]);
-        return (afterHour > calendar.get(Calendar.HOUR_OF_DAY));
-    }*/
 
     private void initialDataSchedule() {
         dayOfWeek = CalendarUtils.sortDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK));
         String[] days = getResources().getStringArray(R.array.array_days_week);
         Task<QuerySnapshot> schedulesRef = FirebaseFirestore.getInstance()
                 .collection("Businesses")
-                .document(business.getId())
+                .document(booking.getIdBusiness())
                 .collection("Schedules")
                 .whereEqualTo("day", days[dayOfWeek])
                 .whereEqualTo("opened", true)
@@ -149,7 +142,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Log.d(TAG, document.getId() + " => " + document.getData());
                     schedulesBooking = new ArrayList<>();
-                    Schedule schedules = document.toObject(Schedule.class);
+                    schedules = document.toObject(Schedule.class);
                     ArrayList<String> divideSchedule = validateRangeHours(schedules.getSchedulesDay());
                     if (schedules.getSchedulesDay() != null && divideSchedule.size() > 0) {
                         calendarView.setMinDate(calendar.getTimeInMillis());
@@ -171,7 +164,6 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private boolean isPastDay() {
 
         TimeZone tz = TimeZone.getTimeZone("GMT+01:00");
@@ -185,15 +177,16 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                 today.get(Calendar.MONTH) + "-" +
                 today.get(Calendar.DAY_OF_MONTH);
 
-        SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd", Locale.forLanguageTag("es-ES"));
 
-        Date dToday = null;
-        Date dSelect = null;
+        Date dToday;
+        Date dSelect;
         boolean com = false;
         try {
             dSelect = sdformat.parse(sDate);
             dToday = sdformat.parse(tDate);
 
+            assert dSelect != null;
             com = dSelect.before(dToday);
 
         } catch (ParseException e) {
@@ -210,29 +203,26 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         if (!isPastDay()) {
             Task<QuerySnapshot> schedulesRef = FirebaseFirestore.getInstance()
                     .collection("Businesses")
-                    .document(business.getId())
+                    .document(booking.getIdBusiness())
                     .collection("Schedules")
                     .whereEqualTo("opened", true)
                     .whereEqualTo("day", days[dayOfWeek])
                     .get();
-            schedulesRef.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            schedulesBooking = new ArrayList<>();
-                            Schedule schedules = document.toObject(Schedule.class);
-                            ArrayList<String> divideSchedule = validateRangeHours(schedules.getSchedulesDay());
-                            if (schedules.getSchedulesDay() != null && divideSchedule.size() > 0) {
-                                decomposeSchedule(divideSchedule);
-                            } else {
-                                loadScheduleInterfaceNoAvailable();
-                            }
+            schedulesRef.addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        schedulesBooking = new ArrayList<>();
+                        schedules = document.toObject(Schedule.class);
+                        ArrayList<String> divideSchedule = validateRangeHours(schedules.getSchedulesDay());
+                        if (schedules.getSchedulesDay() != null && divideSchedule.size() > 0) {
+                            decomposeSchedule(divideSchedule);
+                        } else {
+                            loadScheduleInterfaceNoAvailable();
                         }
-                    } else {
-                        loadScheduleInterfaceNoAvailable();
                     }
+                } else {
+                    loadScheduleInterfaceNoAvailable();
                 }
             });
 
@@ -241,53 +231,49 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         }
     }
 
-    private int loadTimeService() {
+    private double loadTimeService() {
         int sumTime = 0;
         for (int i = 0; i < services.size(); i++) {
             String time = services.get(i).getTime().split("m")[0];
             sumTime += Integer.parseInt(time);
         }
-        return sumTime;
+        return sumTime / 60f;
     }
 
     private ArrayList<String> validateRangeHours(ArrayList<String> schedulesBooking) {
         ArrayList<String> newScheduleDay = new ArrayList<>();
         Calendar now = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"));
 
-        int sumTimeService = loadTimeService();
-//        SimpleDateFormat sdfMadrid = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-//        sdfMadrid.setTimeZone(TimeZone.getTimeZone("Europe/Madrid"));
-//        System.out.printf("Hora Madrid:\t\t %s\n", sdfMadrid.format(calendar.getTime()));
-//        System.out.printf("Hora Madrid:\t\t %s\n", sdfMadrid.format(now.getTime()));
-
         float hour = now.get(Calendar.HOUR_OF_DAY) + now.get(Calendar.MINUTE) / 60.0f;
-        if (CalendarUtils.isSameDay(calendar, now)) {
+        if (CalendarUtils.isSameDay(calendar, now) &&
+                hour >= Integer.parseInt(schedulesBooking.get(schedulesBooking.size() - 1).split(" - ")[0].split(":")[0])) {
             if (hour < Integer.parseInt(schedulesBooking.get(schedulesBooking.size() - 1).split(" - ")[1].split(":")[0])) {
                 for (int i = 0; i < schedulesBooking.size(); i++) {
                     String[] range = schedulesBooking.get(i).split(" - ");
                     int afterMinute = Integer.parseInt(range[1].split(":")[1]);
+                    int beforeMinute = Integer.parseInt(range[0].split(":")[1]);
                     int beforeHour = Integer.parseInt(range[0].split(":")[0]);
                     int afterHour = Integer.parseInt(range[1].split(":")[0]);
-                    float timeBefore = Float.parseFloat(range[0].split(":")[0]) +
-                            (float) afterMinute / 60.0f;
-                    while(hour > timeBefore){
-                        timeBefore+=0.25;
-                    }
-                    beforeHour = Math.round(timeBefore);
-                    float timeAfter = Float.parseFloat(range[1].split(":")[0]) +
-                            Float.parseFloat(range[1].split(":")[1]) / 60.0f;
-                    if (hour <= timeBefore && hour < timeAfter) {
-                        int timeCheck = (afterHour - beforeHour) * sumTimeService + afterMinute / 15;
-                        for (int x = 0; x < timeCheck; x++) {
-                            float compareHour = beforeHour + (x * (0.25f * sumTimeService));
-                            if (hour <= compareHour) {
-                                int minutes = (int) (x * (0.25f * sumTimeService) - Math.ceil(x * (0.25f * sumTimeService))) * 60;
-                                String minuteTxt = minutes == 0 ? "00" : Integer.toString(minutes);
-                                int firstHour = (int) Math.ceil(compareHour);
-                                newScheduleDay.add(firstHour + ":" + minuteTxt + " - " + range[1]);
-                                break;
-                            }
+                    float timeBefore = beforeHour + beforeMinute / 60.0f;
+                    float timeAfter = afterHour + afterMinute / 60.0f;
+                    if (hour < timeAfter) {
+                        if (hour > timeBefore) {
+                            beforeHour = (int) Math.floor(hour);
                         }
+                        int minutes = 0;
+                        float minuteH = (float) ((hour - Math.floor(hour)) * 60);
+                        if (minuteH > 45) {
+                            beforeHour++;
+                        } else if (minuteH > 30) {
+                            minutes = 45;
+                        } else if (minuteH > 15) {
+                            minutes = 30;
+                        } else if (minuteH > 0) {
+                            minutes = 15;
+                        }
+                        String beforeHourTxt = beforeHour == 0 ? "00" : beforeHour > 0 && beforeHour < 10 ? "0" + beforeHour : Integer.toString(beforeHour);
+                        String minuteTxt = minutes == 0 ? "00" : Integer.toString(minutes);
+                        newScheduleDay.add(beforeHourTxt + ":" + minuteTxt + " - " + range[1]);
                     }
                 }
             }
@@ -317,75 +303,47 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                 String x = range[1].split(":")[1];
                 afterMinute = Integer.parseInt(x);
             }
-            int resM = afterMinute / 15;
-            int res = (afterHour - beforeHour) * 4 + resM;
+            int res = (int) (((afterHour + (afterMinute / 60f)) - (beforeHour + (beforeMinute / 60f))) * 60) / 15;
             generateArraySchedule(beforeHour, beforeMinute, res);
         }
         removeBookingService();
     }
-
 
     private void generateArraySchedule(int beforeHour, int beforeMinute, int res) {
         String bH = Integer.toString(beforeHour);
         String bM = Integer.toString(beforeMinute);
         if (beforeHour == 0) {
             bH = "00";
-        } else if(beforeHour > 0 && beforeHour < 10){
-            bH = "0"+bH;
+        } else if (beforeHour > 0 && beforeHour < 10) {
+            bH = "0" + bH;
         }
         if (beforeMinute == 0) {
             bM = "00";
-        } else if(beforeMinute > 0 && beforeHour < 10) {
-            bM = "0"+bM;
+        } else if (beforeMinute > 0 && beforeMinute < 10) {
+            bM = "0" + bM;
         }
-        int minutes = 0;
+        int minutes = beforeMinute;
         int hours = beforeHour;
         schedulesBooking.add(bH + ":" + bM);
         for (int x = 1; x < res; x++) {
-            if (x % 4 == 0 && x > 0) {
+            if (minutes == 45) {
                 hours += 1;
-                bH = hours + "";
-            }
-            if (x > 0) {
-                minutes += 15;
-                bM = minutes + "";
-            }
-            if (x % 4 == 0 && x > 0) {
+                if (hours > 0 && hours < 10) {
+                    bH = "0" + hours;
+                } else {
+                    bH = hours + "";
+                }
+
                 bM = "00";
                 minutes = 0;
+            } else {
+                minutes += 15;
+                bM = minutes + "";
             }
             schedulesBooking.add(bH + ":" + bM);
         }
 
     }
-
-//    private void generateArraySchedule(int beforeHour, int beforeMinute, float res, int sumTimeService) {
-//        String bH = Integer.toString(beforeHour);
-//        String bM = Integer.toString(beforeMinute);
-//        if (beforeHour == 0) {
-//            bH = "00";
-//        }
-//        if (beforeMinute == 0) {
-//            bM = "00";
-//        }
-//        int minutes = 0;
-//        int hours = beforeHour;
-//        schedulesBooking.add(bH + ":" + bM);
-//        for (int x = 1; x < res; x++) {
-//            if (x % (60/sumTimeService) == 0) {
-//                hours += 1;
-//                bH = hours + "";
-//            }
-//            minutes += sumTimeService;
-//            bM = minutes + "";
-//            if (x % (60/sumTimeService) == 0) {
-//                bM = "00";
-//                minutes = 0;
-//            }
-//            schedulesBooking.add(bH + ":" + bM);
-//        }
-//
-//    }
 
     private void loadScheduleInterfaceNoAvailable() {
         HorizontalScrollView horizontalScrollView = binding.horizontalScroll;
@@ -410,7 +368,6 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
         findNearEnableDate.setGravity(Gravity.CENTER);
         findNearEnableDate.setLayoutParams(params);
         linearLayout.addView(findNearEnableDate);
-
 
         findNearEnableDate.setOnClickListener(v -> {
 
@@ -438,91 +395,136 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
             params.setMargins(18, 18, 18, 18);
             button.setLayoutParams(params);
             button.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                clickSchedule(isChecked, buttonView);
+                if (idLastButtonChecked != buttonView.getId()) {
+                    clickSchedule(isChecked, (ToggleButton) buttonView);
+                }
             });
             linearLayout.addView(button);
-            btDoBooking.setEnabled(true);
+            btDoBooking.setEnabled(false);
             btAddService.setEnabled(true);
             textAddService.setEnabled(true);
-            showProgress(false);
+            //    showProgress(false);
         }
+
         if (btScheduleList.size() > 0) {
-            btScheduleList.get(0).setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.border_selected_button, getTheme()));
-            btScheduleList.get(0).setChecked(true);
+            if(!Objects.equals(booking.getId(), "")) {
+                btScheduleList.get(booking.getSlot()).setChecked(true);
+                idLastButtonChecked = booking.getSlot();
+            }else {
+                //  btScheduleList.get(0).setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.border_selected_button, getTheme()));
+                btScheduleList.get(0).setChecked(true);
+                idLastButtonChecked = 0;
+            }
+            btDoBooking.setEnabled(true);
         }
     }
 
-    private void clickSchedule(boolean isChecked, Button buttonView){
+    private void clickSchedule(boolean isChecked, ToggleButton buttonView) {
         if (isChecked) {
-            int position = (int) buttonView.getId();
+
+            int position = buttonView.getId();
             Common.slotSchedule = position;
-            int totalMinute = Integer.parseInt(schedulesBooking.get(position).split(":")[1]);
-            int totalHour = Integer.parseInt(schedulesBooking.get(position).split(":")[0]);
 
-            String txtHour = "", txtMinute = "";
-            String[] time = null;
-
-            for (int i1 = 0; i1 < services.size(); i1++) {
-                if (services.get(i1).getTime().contains(":")) {
-                    time = services.get(i1).getTime().split(":");
-                    if (Integer.parseInt(time[1]) < 60) {
-                        totalMinute += Integer.parseInt(time[1]);
-                    } else {
-                        totalMinute = 0;
-                        totalHour += 1;
-                    }
-                    totalHour += Integer.parseInt(time[1]);
-                } else if (services.get(i1).getTime().contains("m")) {
-                    time = services.get(i1).getTime().split("m");
-                    if ((Integer.parseInt(time[0]) + totalMinute) < 60) {
-                        totalMinute += Integer.parseInt(time[0]);
-                    } else {
-                        totalMinute = (Integer.parseInt(time[0]) + totalMinute) - 60;
-                        totalHour += 1;
-                    }
-                } else if (services.get(i1).getTime().contains("h")) {
-                    time = services.get(i1).getTime().split("h");
-                    totalHour += Integer.parseInt(time[0]);
+            int minuteCheckedSchedule = Integer.parseInt(schedulesBooking.get(position).split(":")[1]);
+            int hourCheckedSchedule = Integer.parseInt(schedulesBooking.get(position).split(":")[0]);
+            boolean scheduleOut = false;
+            int lastHourSchedule, lastMinuteSchedule;
+            double totalHours = loadTimeService();
+            for (int x = 0; x < schedules.getSchedulesDay().size(); x++) {
+                String scheduleDay = schedules.getSchedulesDay().get(x);
+                lastHourSchedule = Integer.parseInt(scheduleDay.split(" - ")[1].split(":")[0]);
+                lastMinuteSchedule = Integer.parseInt(scheduleDay.split(" - ")[1].split(":")[1]);
+                boolean b1 = (hourCheckedSchedule + (minuteCheckedSchedule / 60f) + totalHours) > (lastHourSchedule + ((lastMinuteSchedule) / 60f));
+                if (b1 && (x + 1) > schedules.getSchedulesDay().size() - 1) {
+                    scheduleOut = true;
                 }
             }
-            if (totalHour <= 9) {
-                txtHour = "0" + totalHour;
-            } else {
-                txtHour = totalHour + "";
-            }
-            if (totalMinute < 9) {
-                txtMinute = "0" + totalMinute;
-            } else {
-                txtMinute = totalMinute + "";
-            }
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String untilTime = txtHour + ":" + txtMinute;
-            Common.rangeHours = schedulesBooking.get(position) + " - " + untilTime;
+            // Los 15min extra de lastMinuteSchedule es porque no se muestran los últimos 15min del horario
+            if (scheduleOut) {
+                Dialog dialog = new Dialog(this);
+                dialog.setContentView(R.layout.dialog_notice_schedule_out);
+                Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(AppCompatResources.getDrawable(getBaseContext(), R.drawable.border_button));
+                dialog.setCancelable(false);
+                TextView textView = dialog.findViewById(R.id.dialog_schedule_out);
+                textView.setText(R.string.message_notice_schedule_out_of_time);
+                Button button = dialog.findViewById(R.id.bt_schedule_out);
+                button.setOnClickListener(v -> dialog.dismiss());
+                dialog.show();
+                buttonView.setChecked(false);
 
-            Common.timeSchedule = Common.rangeHours +
-                    " at " +
-                    simpleDateFormat.format(calendar.getTime());
-            Common.dateSchedule = simpleDateFormat.format(calendar.getTime());
-
-            for (int i1 = 0; i1 < btScheduleList.size(); i1++) {
-                if (buttonView.getId() != i1) {
-                    btScheduleList.get(i1).setChecked(false);
-                }
+            } else {
+                idLastButtonChecked = buttonView.getId();
+                calculatedSchedule(minuteCheckedSchedule, hourCheckedSchedule, buttonView, position);
             }
-            buttonView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.border_selected_button, getTheme()));
-            adapterService.notifyDataSetChanged();
         } else {
             buttonView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.border_button, getTheme()));
         }
     }
 
+    private void calculatedSchedule(int minuteCheckedSchedule, int hourCheckedSchedule, Button buttonView, int position) {
+        int totalHour = hourCheckedSchedule;
+        int totalMinute = minuteCheckedSchedule;
+        String txtHour, txtMinute;
+        String[] time;
+        for (int i1 = 0; i1 < services.size(); i1++) {
+            if (services.get(i1).getTime().contains(":")) {
+                time = services.get(i1).getTime().split(":");
+                if (Integer.parseInt(time[1]) < 60) {
+                    totalMinute += Integer.parseInt(time[1]);
+                } else {
+                    totalMinute = 0;
+                    totalHour += 1;
+                }
+                totalHour += Integer.parseInt(time[1]);
+            } else if (services.get(i1).getTime().contains("m")) {
+                time = services.get(i1).getTime().split("m");
+                if ((Integer.parseInt(time[0]) + totalMinute) < 60) {
+                    totalMinute += Integer.parseInt(time[0]);
+                } else {
+                    totalMinute = (Integer.parseInt(time[0]) + totalMinute) - 60;
+                    totalHour += 1;
+                }
+            } else if (services.get(i1).getTime().contains("h")) {
+                time = services.get(i1).getTime().split("h");
+                totalHour += Integer.parseInt(time[0]);
+            }
+        }
+
+        if (totalHour <= 9) {
+            txtHour = "0" + totalHour;
+        } else {
+            txtHour = totalHour + "";
+        }
+        if (totalMinute < 9) {
+            txtMinute = "0" + totalMinute;
+        } else {
+            txtMinute = totalMinute + "";
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("es-ES"));
+        String untilTime = txtHour + ":" + txtMinute;
+        Common.rangeHours = schedulesBooking.get(position) + " - " + untilTime;
+
+        Common.timeSchedule = Common.rangeHours +
+                " at " +
+                simpleDateFormat.format(calendar.getTime());
+        Common.dateSchedule = simpleDateFormat.format(calendar.getTime());
+
+        for (int i1 = 0; i1 < btScheduleList.size(); i1++) {
+            if (buttonView.getId() != i1) {
+                btScheduleList.get(i1).setChecked(false);
+            }
+        }
+        buttonView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.border_selected_button, getTheme()));
+        adapterService.notifyItemChanged(0);
+    }
+
     private void removeBookingService() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd_MM_yyyy");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd_MM_yyyy", Locale.forLanguageTag("es-ES"));
         CollectionReference serviceRef = FirebaseFirestore.getInstance()
                 .collection("Businesses")
-                .document(business.getId())
+                .document(booking.getIdBusiness())
                 .collection("Booking")
-                .document(Common.idEmployee)//ID DEL EMPLEADO
+                .document(booking.getIdEmployee())//ID DEL EMPLEADO
                 .collection(simpleDateFormat.format(calendar.getTime()));
         serviceRef.get()
                 .addOnCompleteListener(task -> {
@@ -532,12 +534,12 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                             String[] date = booking.getTime().split(" at")[0].split(" - ");
                             int forPosition = schedulesBooking.indexOf(date[0]);
                             int ultPosition = schedulesBooking.indexOf(date[1]);
-                            ArrayList copy = schedulesBooking;
-
-                            for (int i = forPosition; i <= ultPosition; i++) {
-                                copy.remove(forPosition);
+                            ArrayList<String> copy = schedulesBooking;
+                            if (forPosition > 0 && ultPosition > 0) {
+                                if (ultPosition >= forPosition) {
+                                    copy.subList(forPosition, ultPosition + 1).clear();
+                                }
                             }
-                            schedulesBooking = copy;
                         }
                     }
                     loadScheduleInterface();
@@ -553,13 +555,13 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            idLastButtonChecked = -1;
             loadSchedule();
             Log.i("LOG", "dia " + dayOfMonth + " mes " + month + " año " + year +
                     " calendar AÑO " + calendar.get(Calendar.YEAR) + " MES " + calendar.get(Calendar.MONTH) + " dia " + calendar.get(Calendar.DAY_OF_MONTH));
         });
 
         btAddService.setOnClickListener(v -> clickAddService());
-
 
 
         textAddService.setOnClickListener(v -> clickAddService());
@@ -571,59 +573,67 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
             finish();
         });
 
-        btDoBooking.setOnClickListener(v -> {
-            doBooking();
-        });
+        btDoBooking.setOnClickListener(v -> doBooking());
     }
 
-    private void doBooking(){
+    private void doBooking() {
         String[] convertTime = Common.rangeHours.split(" - ");
         String[] startTimeConvert = convertTime[0].split(":");
         int startHourInt = Integer.parseInt(startTimeConvert[0]);
         int startMinInt = Integer.parseInt(startTimeConvert[1]);
 
-        Calendar bookingDateWithourHouse = Calendar.getInstance();
+        Calendar bookingDateWithourHouse = calendar;
         //    bookingDateWithourHouse.setTimeInMillis(calendar.getTimeInMillis());
         bookingDateWithourHouse.set(Calendar.HOUR_OF_DAY, startHourInt);
         bookingDateWithourHouse.set(Calendar.MINUTE, startMinInt);
-
-        Timestamp timestamp = new Timestamp(bookingDateWithourHouse.getTime());
-
+        Timestamp timestamp = new Timestamp(calendar.getTime());
         // DO BOOKING
-        Booking booking = new Booking();
         booking.setTimestamp(timestamp);
-        booking.setCustomer(Common.nameUser);
-        booking.setEmailCustomer(Common.emailUser);
         booking.setTime(Common.timeSchedule);
-        booking.setIdBusiness(business.getId());
-        booking.setBusiness(nameBusiness);
         booking.setServices(services);
-        booking.setLatitude(business.getLatitude());
-        booking.setLongitude(business.getLongitude());
         booking.setSlot(Common.slotSchedule);
-        booking.setDone(false);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd_MM_yyyy");
-
-        DocumentReference bookingRef = FirebaseFirestore.getInstance()
-                .collection("Businesses")
-                .document(business.getId())
-                .collection("Booking")
-                .document(Common.idEmployee)//ID DEL EMPLEADO
-                .collection(simpleDateFormat.format(calendar.getTime()))
-                .document();
-        booking.setId(bookingRef.getId());
-        bookingRef.set(booking).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                addToUserBooking(booking);
-            } else {
-                Toast.makeText(BookingServiceActivity.this, R.string.msg_error_do_booking,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd_MM_yyyy", Locale.forLanguageTag("es-ES"));
+        if (booking.getId() == null) {
+            DocumentReference bookingRef = FirebaseFirestore.getInstance()
+                    .collection("Businesses")
+                    .document(booking.getIdBusiness())
+                    .collection("Booking")
+                    .document(booking.getIdEmployee())//ID DEL EMPLEADO
+                    .collection(simpleDateFormat.format(calendar.getTime()))
+                    .document();
+            booking.setId(bookingRef.getId());
+            bookingRef.set(booking).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    addToUserBooking();
+                } else {
+                    Toast.makeText(BookingServiceActivity.this, R.string.msg_error_do_booking,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            FirebaseFirestore.getInstance()
+                    .collection("Businesses")
+                    .document(booking.getIdBusiness())
+                    .collection("Booking")
+                    .document(booking.getIdEmployee())//ID DEL EMPLEADO
+                    .collection(simpleDateFormat.format(calendar.getTime()))
+                    .document(booking.getId())
+                    .update(
+                            "time", booking.getTime(),
+                            "services", booking.getServices(),
+                            "timestamp", booking.getTimestamp(),
+                            "slot", booking.getSlot())
+                    .addOnSuccessListener(unused -> {
+                        updateUserBooking();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(BookingServiceActivity.this, R.string.msg_error_do_booking,
+                                Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
 
-    private void addToUserBooking(Booking booking) {
+    private void addToUserBooking() {
         DocumentReference bookingRef = FirebaseFirestore.getInstance()
                 .collection("Users")
                 .document(Common.idUser)
@@ -639,6 +649,26 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
                 Toast.makeText(BookingServiceActivity.this, "Fail", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateUserBooking(){
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(Common.idUser)
+                .collection("Booking")
+                .document(booking.getId()).update(
+                        "time", booking.getTime(),
+                        "services", booking.getServices(),
+                        "timestamp", booking.getTimestamp(),
+                        "slot", booking.getSlot())
+                .addOnSuccessListener(unused -> {
+                    Intent intent = new Intent(BookingServiceActivity.this, ViewMainCustomer.class);
+                    startActivity(intent
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                    Toast.makeText(BookingServiceActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(BookingServiceActivity.this, "Fail", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void showProgress(final boolean show) {
@@ -664,7 +694,7 @@ public class BookingServiceActivity extends AppCompatActivity implements Default
 
     private void clickAddService() {
         Intent intent = new Intent(BookingServiceActivity.this, ListServiceActivity.class);
-        intent.putExtra("Business", business.getId());
+        intent.putExtra("Business", booking.getIdBusiness());
         getAddService.launch(intent);
     }
 

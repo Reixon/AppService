@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.KeyEvent;
@@ -35,11 +33,9 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.location.Priority;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
@@ -113,15 +109,15 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         });
 
         locationRequest = LocationRequest.create()
-        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setMaxWaitTime(1000)
-        .setInterval(20 * 1000);
+        .setPriority(Priority.PRIORITY_HIGH_ACCURACY).setMaxWaitTime(1000);
+
+//        locationRequest = LocationRequest.create()
+//        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+//                .setMaxWaitTime(1000)
+//        .setInterval(20 * 1000);
         locationCallback = new LocationCallback() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
+            public void onLocationResult(@NonNull LocationResult locationResult) {
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
                         latitude = location.getLatitude();
@@ -158,11 +154,11 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             int step = intent.getIntExtra(Common.KEY_STEP, 0);
             if(step == 0){
-                Common.name = intent.getExtras().getString("NAME");
+                Common.name = Objects.requireNonNull(intent.getExtras()).getString("NAME");
                 Common.email = intent.getExtras().getString("EMAIL");
                 Common.password = intent.getExtras().getString("PASSWORD");
             } else if(step == 1){
-                Common.nameBusiness = intent.getExtras().getString("BUSINESS_NAME");
+                Common.nameBusiness = Objects.requireNonNull(intent.getExtras()).getString("BUSINESS_NAME");
                 Common.phone = intent.getExtras().getString("BUSINESS_PHONE");
             } else if(step == 2){
                 Common.kindBusiness = Objects.requireNonNull(intent.getExtras()).getInt("BUSINESS_KIND");
@@ -181,7 +177,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
                 }
                 sendAddress();
             } else if(step == 4){
-                Common.street = intent.getExtras().getString("STREET_EDIT");
+                Common.street = Objects.requireNonNull(intent.getExtras()).getString("STREET_EDIT");
                 Common.number = intent.getExtras().getString("NUMBER_EDIT");
                 Common.postalCode = intent.getExtras().getString("POSTAL_CODE_EDIT");
                 Common.city = intent.getExtras().getString("CITY_EDIT");
@@ -223,7 +219,6 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         }
     };
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         viewPager.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -273,9 +268,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     showProgress(false);
                 })
-                .addOnSuccessListener(aVoid -> {
-                    completeRegisterBusiness(userDocument.getId(), businesses);
-                });
+                .addOnSuccessListener(aVoid -> completeRegisterBusiness(userDocument.getId(), businesses));
             })
             .addOnFailureListener(this, e -> {
                     Toast.makeText(RegisterBusinessActivity.this,
@@ -312,51 +305,48 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         businesses.set(business).addOnSuccessListener(aVoid1 -> {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geoFire");
             GeoFire geoFire = new GeoFire(ref);
-            geoFire.setLocation(business.getId(), new GeoLocation(Common.latitude, Common.longitude), new GeoFire.CompletionListener() {
-                @Override
-                public void onComplete(String key, DatabaseError error) {
-                    showProgress(false);
-                    if (error != null) {
-                        deleteEmailUser(idUser, business.getId());
-                        Intent intent = new Intent(RegisterBusinessActivity.this, LoginActivity.class);
-                        startActivity(intent
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                        finish();
-                    } else {
-                        Map<String, Object> data = new HashMap<>();
-                        for(int i = 0; i < Common.schedules.size(); i++){
-                            DocumentReference schedules = FirebaseFirestore.getInstance()
-                                    .collection("Businesses")
-                                    .document(business.getId())
-                                    .collection("Schedules")
-                                    .document(Integer.toString(i));
-                            data.put("day", Common.schedules.get(i).getDay());
-                            data.put("opened", Common.schedules.get(i).isOpened());
-                            data.put("schedulesDay", Common.schedules.get(i).getSchedulesDay());
-                            schedules.set(data);
-                        }
-                        Map<String, Object> dataService = new HashMap<>();
-                        for(int x = 0; x < Common.services.size(); x++) {
-                            DocumentReference servicesRef = FirebaseFirestore.getInstance()
-                                    .collection("Businesses")
-                                    .document(business.getId())
-                                    .collection("Service")
-                                    .document();
-                            dataService.put("id", servicesRef.getId());
-                            dataService.put("time", Common.services.get(x).getTime());
-                            dataService.put("name", Common.services.get(x).getName());
-                            dataService.put("price", Common.services.get(x).getPrice());
-                            servicesRef.set(dataService);
-                        }
-
-                        Intent intent = new Intent(RegisterBusinessActivity.this, ViewMainBusinessActivity.class);
-                        startActivity(intent
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-                        Toast.makeText(RegisterBusinessActivity.this, "Success", Toast.LENGTH_SHORT).show();
-
-                    }
+            geoFire.setLocation(business.getId(), new GeoLocation(Common.latitude, Common.longitude), (key, error) -> {
+                showProgress(false);
+                if (error != null) {
+                    deleteEmailUser(idUser, business.getId());
+                    Intent intent = new Intent(RegisterBusinessActivity.this, LoginActivity.class);
+                    startActivity(intent
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                     finish();
+                } else {
+                    Map<String, Object> data = new HashMap<>();
+                    for(int i = 0; i < Common.schedules.size(); i++){
+                        DocumentReference schedules = FirebaseFirestore.getInstance()
+                                .collection("Businesses")
+                                .document(business.getId())
+                                .collection("Schedules")
+                                .document(Integer.toString(i));
+                        data.put("day", Common.schedules.get(i).getDay());
+                        data.put("opened", Common.schedules.get(i).isOpened());
+                        data.put("schedulesDay", Common.schedules.get(i).getSchedulesDay());
+                        schedules.set(data);
+                    }
+                    Map<String, Object> dataService = new HashMap<>();
+                    for(int x = 0; x < Common.services.size(); x++) {
+                        DocumentReference servicesRef = FirebaseFirestore.getInstance()
+                                .collection("Businesses")
+                                .document(business.getId())
+                                .collection("Service")
+                                .document();
+                        dataService.put("id", servicesRef.getId());
+                        dataService.put("time", Common.services.get(x).getTime());
+                        dataService.put("name", Common.services.get(x).getName());
+                        dataService.put("price", Common.services.get(x).getPrice());
+                        servicesRef.set(dataService);
+                    }
+
+                    Intent intent = new Intent(RegisterBusinessActivity.this, ViewMainBusinessActivity.class);
+                    startActivity(intent
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                    Toast.makeText(RegisterBusinessActivity.this, "Success", Toast.LENGTH_SHORT).show();
+
                 }
+                finish();
             });
         }).addOnFailureListener(this, e ->
                 Toast.makeText(RegisterBusinessActivity.this,
@@ -366,41 +356,30 @@ public class RegisterBusinessActivity extends AppCompatActivity {
 
     private void deleteEmailUser(final String idUser, final String idBusiness){
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        firebaseUser.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                DocumentReference userDocument = FirebaseFirestore.getInstance()
-                        .collection("Users")
-                        .document(idUser);
-                userDocument.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        DocumentReference businessDocument = FirebaseFirestore.getInstance()
-                                .collection("Businesses")
-                                .document(idBusiness);
-                        businessDocument.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("geoFire");
-                                GeoFire geoFire = new GeoFire(ref);
-                                geoFire.removeLocation(idBusiness);
-                            }
-                        });
-
-                    }
+        assert firebaseUser != null;
+        firebaseUser.delete().addOnSuccessListener(aVoid -> {
+            DocumentReference userDocument = FirebaseFirestore.getInstance()
+                    .collection("Users")
+                    .document(idUser);
+            userDocument.delete().addOnSuccessListener(aVoid1 -> {
+                DocumentReference businessDocument = FirebaseFirestore.getInstance()
+                        .collection("Businesses")
+                        .document(idBusiness);
+                businessDocument.delete().addOnSuccessListener(aVoid11 -> {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("geoFire");
+                    GeoFire geoFire = new GeoFire(ref);
+                    geoFire.removeLocation(idBusiness);
                 });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
 
-            }
+            });
+        }).addOnFailureListener(e -> {
+
         });
 
     }
 
     private void setUpStepView() {
-        List<String> stepList = new ArrayList<String>();
+        List<String> stepList = new ArrayList<>();
         stepList.add("Usuario");
         stepList.add("Negocio");
         stepList.add("¿Donde trabaja?");
@@ -411,7 +390,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         stepView.setSteps(stepList);
     }
 
-    private void showExplanation(String title, String message, final int permissionRequestCode){
+    private void showExplanation(String title, String message){
         final android.app.AlertDialog.Builder builder =
                 new android.app.AlertDialog.Builder(this);
         builder.setTitle(title);
@@ -420,7 +399,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         builder.setView(txt);
         builder.setPositiveButton(R.string.btOk, (dialog, which) ->
                 ActivityCompat.requestPermissions(RegisterBusinessActivity.this, new String[]
-                {Manifest.permission.ACCESS_FINE_LOCATION}, permissionRequestCode));
+                {Manifest.permission.ACCESS_FINE_LOCATION}, 100));
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -432,7 +411,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
             if ((shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))) {
                 String title = getResources().getString(R.string.title_use_location);
                 String message = getResources().getString(R.string.explication_permissions);
-                showExplanation(title, message, MY_PERMISSIONS);
+                showExplanation(title, message);
 
             } else {
                 ActivityCompat.requestPermissions(this, new String[]
@@ -440,14 +419,11 @@ public class RegisterBusinessActivity extends AppCompatActivity {
             }
         } else {
             locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
             locationRequest.setInterval(20 * 1000);
             locationCallback = new LocationCallback() {
                 @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult == null) {
-                        return;
-                    }
+                public void onLocationResult(@NonNull LocationResult locationResult) {
                     for (Location location : locationResult.getLocations()) {
                         if (location != null) {
                             latitude = location.getLatitude();
@@ -464,7 +440,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS) {
             if (grantResults.length > 0
@@ -540,7 +516,7 @@ public class RegisterBusinessActivity extends AppCompatActivity {
         int y = 0;
         Common.hours = new String[(60/5)*24];
         for(int i = 0; i < 24; i++){
-            for(x = x; x < (60/5)*(i+1); x++){
+            for(; x < (60/5)*(i+1); x++){
                 String minute = Integer.toString(y*5);
                 String minutes;
                 if((y*5) < 10){

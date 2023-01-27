@@ -83,18 +83,20 @@ public class AdapterScheduleHours extends RecyclerView.Adapter<AdapterScheduleHo
             BottomSheetDialog dialog = new BottomSheetDialog(context);
             dialog.setContentView(R.layout.adapter_timepicker_schedule);
             NumberPicker numberPicker = dialog.findViewById(R.id.forHour);
+            assert numberPicker != null;
             numberPicker.setDisplayedValues(null);
             numberPicker.setMaxValue(maxValue);
             numberPicker.setMinValue(minValue);
             numberPicker.setDisplayedValues(Common.hours);
 
             NumberPicker numberPicker1 = dialog.findViewById(R.id.untilHour);
+            assert numberPicker1 != null;
             numberPicker1.setDisplayedValues(null);
             numberPicker1.setMaxValue(maxValue);
             numberPicker1.setMinValue(minValue);
             numberPicker1.setDisplayedValues(Common.hours);
 
-            String[] txt = textView.getText().toString().split(" - ");
+            String[] txt = textView.getText().toString().split(context.getResources().getString(R.string.separateSchedule));
 
             String[] forHour = txt[0].split(":");
             int positionH = Integer.parseInt(forHour[0]) * 12;
@@ -106,49 +108,49 @@ public class AdapterScheduleHours extends RecyclerView.Adapter<AdapterScheduleHo
             numberPicker1.setValue(positionUntil);
             dialog.show();
             Button accept = dialog.findViewById(R.id.btOk_TimePicker);
-            accept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Resources res = context.getResources();
-                    String resume = String.format(res.getString(R.string.text_schedule_format),
-                            Common.hours[numberPicker.getValue()],
-                            Common.hours[numberPicker1.getValue()]);
-                    textView.setText(resume);
-                    scheduleList.get(weekPosition).getSchedulesDay().set(posicion, resume);
-                    dialog.cancel();
-                }
+            assert accept != null;
+            accept.setOnClickListener(v1 -> {
+                Resources res = context.getResources();
+                String resume = String.format(res.getString(R.string.text_schedule_format),
+                        Common.hours[numberPicker.getValue()],
+                        Common.hours[numberPicker1.getValue()]);
+                textView.setText(resume);
+                scheduleList.get(weekPosition).getSchedulesDay().set(posicion, resume);
+                dialog.cancel();
             });
             Button cancel = dialog.findViewById(R.id.btCancel_TimePicker);
-            cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.cancel();
-                }
-            });
+            assert cancel != null;
+            cancel.setOnClickListener(v12 -> dialog.cancel());
 
         });
         holder.actionBtn.setOnClickListener(v -> {
-            final int posicion = (int) v.getTag();
-            if(posicion == 0){
+            final int positionActionBtn = (int) v.getTag();
+            if(positionActionBtn == 0){
                 if (scheduleList.get(weekPosition).isOpened()) {
+                    int positionSchedule = 0;
                     if (scheduleList.get(weekPosition).getSchedulesDay().size() == 1) {
                         scheduleList.get(weekPosition).getSchedulesDay().add(context.getResources().getString(R.string.afternoonSchedule));
+                        positionSchedule = 1;
                     } else if (scheduleList.get(weekPosition).getSchedulesDay().size() == 2) {
                         scheduleList.get(weekPosition).getSchedulesDay().add(context.getResources().getString(R.string.eveningSchedule));
+                        notifyItemInserted(2);
+                        positionSchedule = 2;
                     } else if (scheduleList.get(weekPosition).getSchedulesDay().size() == 3) {
                         scheduleList.get(weekPosition).getSchedulesDay().add(context.getResources().getString(R.string.nightSchedule));
+                        positionSchedule = 3;
                     }
+                    notifyItemInserted(positionSchedule);
                     if (adapterListSchedule.getAddSchedule(weekPosition) && scheduleList.get(weekPosition).getSchedulesDay().size() < 4) {
                         holder.actionBtn.setVisibility(View.VISIBLE);
                     } else {
                         holder.actionBtn.setVisibility(View.INVISIBLE);
                         adapterListSchedule.setAddSchedule(weekPosition, false);
                     }
-                    notifyDataSetChanged();
+                    notifyItemChanged(0);
                 }
             } else {
-                scheduleList.get(weekPosition).getSchedulesDay().remove(posicion);
-                notifyDataSetChanged();
+                scheduleList.get(weekPosition).getSchedulesDay().remove(positionActionBtn);
+                notifyItemRemoved(positionActionBtn);
             }
 
         });
@@ -166,16 +168,8 @@ public class AdapterScheduleHours extends RecyclerView.Adapter<AdapterScheduleHo
 
         public ViewHolder(@NonNull View context) {
             super(context);
-            txtOpeningHours = (TextView) context.findViewById(R.id.txtOpeningHours);
-            actionBtn = (ImageButton)context.findViewById(R.id.pluBt);
-        }
-
-        public TextView getTxtOpeningHour(){
-            return txtOpeningHours;
-        }
-
-        public ImageButton getActionBtn(){
-            return actionBtn;
+            txtOpeningHours = context.findViewById(R.id.txtOpeningHours);
+            actionBtn = context.findViewById(R.id.pluBt);
         }
     }
 
